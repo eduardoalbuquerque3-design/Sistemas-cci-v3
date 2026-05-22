@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Escolar - Sistema de Gestão</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="continuidade.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <div>
+
+            <div class="logo-area">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhCEBRiOnJ4WSaugF7R9v1NsEo_3cIbNliFA&s"
+                    class="logo-img">
+            </div>
+
+            <div class="menu-links">
+
+                <a href="CORD_painel.html" class="nav-link-custom ">
+                    <span class="material-icons-outlined">home</span>
+                    Inicio
+                </a>
+
+                <a href="CORD_turmas.html" class="nav-link-custom">
+                    <span class="material-icons-outlined">groups</span>
+                    Turmas
+                </a>
+
+                <a href="CORD_notas.html" class="nav-link-custom">
+                    <span class="material-icons-outlined">edit_note</span>
+                    Notas
+                </a>
+
+                <a href="CORD_dashboard.html" class="nav-link-custom active">
+                    <span class="material-icons-outlined">leaderboard</span>
+                    Painel
+                </a>
+
+            </div>
+
+        </div>
+
+        <button class="btn-sair" onclick="fazerLogout()">
+            <span class="material-icons-outlined">logout</span>
+            Sair
+        </button>
+
+    </aside>
+
+
+    <div class="dashboard-content-dashboard">
+        <div class="header-dashboard">
+            <h1>Dashboard Acadêmico</h1>
+            <p>Análise de Desempenho e Frequência em Tempo Real</p>
+        </div>
+
+        <div class="summary-dashboard">
+            <div class="stat-item-dashboard">Alunos Ativos<span id="totalAlunos">0</span></div>
+            <div class="stat-item-dashboard">Média de Faltas<span id="mediaFaltas">0</span></div>
+        </div>
+
+        <div class="card-dashboard card-filter-dashboard mb-4-dashboard">
+            <h3>Filtros de Visualização</h3>
+            <div class="filter-group-dashboard">
+                <div class="filter-section-dashboard">
+                    <span>Turma:</span>
+                    <button class="btn-filter active" onclick="filtrar('turma', 'TODAS', this)">Todas</button>
+                    <button class="btn-filter" onclick="filtrar('turma', 'Sala 01', this)">Sala 01</button>
+                    <button class="btn-filter" onclick="filtrar('turma', 'Sala 02', this)">Sala 02</button>
+                    <button class="btn-filter" onclick="filtrar('turma', 'Sala 03', this)">Sala 03</button>
+                    <button class="btn-filter" onclick="filtrar('turma', 'Sala 04', this)">Sala 04</button>
+                </div>
+                <div class="filter-section-dashboard">
+                    <span>Turno:</span>
+                    <button class="btn-filter active" onclick="filtrar('turno', 'TODOS', this)">Todos</button>
+                    <button class="btn-filter" onclick="filtrar('turno', 'Manhã', this)">Manhã</button>
+                    <button class="btn-filter" onclick="filtrar('turno', 'Tarde', this)">Tarde</button>
+                </div>
+                <div class="filter-section-dashboard">
+                    <span>Matéria:</span>
+                    <button class="btn-filter active" onclick="filtrar('disciplina', 'TODAS', this)">Todas</button>
+                    <button class="btn-filter" onclick="filtrar('disciplina', ' ', this)">Inglês</button>
+                    <button class="btn-filter" onclick="filtrar('disciplina', 'ESPANHOL', this)">Espanhol</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid-dashboard">
+            <div class="card-dashboard">
+                <h3>Total de Faltas por Turma</h3>
+                <div class="chart-container-dashboard">
+                    <canvas id="chartFaltas"></canvas>
+                </div>
+            </div>
+
+            <div class="card-dashboard">
+                <h3>Média de Notas por Turma</h3>
+                <div class="chart-container-dashboard">
+                    <canvas id="chartMedias"></canvas>
+                </div>
+            </div>
+
+            <div class="card-dashboard">
+                <h3>Desempenho Geral (Aproveitamento)</h3>
+                <div class="chart-container-dashboard">
+                    <canvas id="chartDesempenho"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="CORD_dashboard.js"></script>
+    <script>
+        function fazerLogout() {
+            if (confirm("Deseja realmente sair?")) {
+                localStorage.clear();
+                window.location.href = "index.html";
+            }
+        }
+        // Executa assim que a página carrega para verificar a escolha anterior do usuário
+document.addEventListener("DOMContentLoaded", function() {
+    const temaSalvo = localStorage.getItem("tema-escolhido");
+    
+    if (temaSalvo === "light") {
+        document.body.classList.add("light-theme");
+        atualizarInterfaceBotao(true);
+    }
+});
+
+function alternarTema() {
+    const body = document.body;
+    body.classList.toggle("light-theme");
+    
+    const ehModoClaro = body.classList.contains("light-theme");
+    
+    // Salva o estado atual no navegador
+    localStorage.setItem("tema-escolhido", ehModoClaro ? "light" : "dark");
+    
+    atualizarInterfaceBotao(ehModoClaro);
+}
+
+function atualizarInterfaceBotao(ehModoClaro) {
+    const icone = document.getElementById("tema-icon");
+    const texto = document.getElementById("tema-texto");
+    
+    if (icone && texto) {
+        if (ehModoClaro) {
+            icone.textContent = "dark_mode";
+            texto.textContent = "Modo Escuro";
+        } else {
+            icone.textContent = "light_mode";
+            texto.textContent = "Modo Claro";
+        }
+    }
+}
+    </script>
+    <script src="continuidade.js"></script>
+</body>
+
+</html>

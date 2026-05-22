@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    
+    <head>
+        <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCI - Recuperar Senha</title>
+
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+
+<body>
+
+    <main class="wrapper-senha">
+
+        <div class="card-recuperacao-senha">
+
+            <section class="lado-info-senha">
+
+                <div class="overlay-senha"></div>
+
+                <div class="conteudo-info-senha">
+
+                    <img class="logo-cci-senha"
+                        src="https://www.iandeshopping.com.br/wp-content/uploads/2020/03/cci.jpg"
+                        alt="CCI">
+
+                    <h1>
+                        Recuperação de Senha
+                    </h1>
+
+                    <p>
+                        Informe seu email institucional para receber
+                        o link de redefinição de senha.
+                    </p>
+
+                    <a href="index.html" class="btn-voltar">
+                        <i class="bi bi-arrow-left"></i>
+                        Voltar ao Login
+                    </a>
+
+                </div>
+
+            </section>
+
+            <section class="lado-form-senha">
+
+                <div class="form-container-senha">
+
+                    <span class="mini-tag-senha">
+            SICCI - Sistema Integrador do Centro de Cearense Idiomas
+                    </span>
+
+                    <h2>
+                        Esqueceu sua senha?
+                    </h2>
+
+                    <p class="subtexto-senha">
+                        Não se preocupe. Enviaremos instruções
+                        para recuperação da conta.
+                    </p>
+
+                    <form id="form-recuperacao">
+
+                        <div class="input-group-senha">
+
+                            <label>Email</label>
+
+                            <div class="input-box-senha">
+
+                                <i class="bi bi-envelope"></i>
+
+                                <input type="email"
+                                    placeholder="Digite seu email"
+                                    required>
+
+                            </div>
+
+                        </div>
+
+                        <button type="submit" class="btn-enviar">
+
+                            <i class="bi bi-send-fill"></i>
+                            Enviar link de recuperação
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="module" src="CORD_senha.js"></script>
+</body>
+
+</html>

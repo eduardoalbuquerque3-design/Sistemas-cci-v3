@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCI - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+
+<body>
+    <main class="wrapper">
+        <div class="card-pilar">
+            <section class="lado-login">
+
+                <div class="form-login-container">
+
+                    <span class="mini-tag">
+                        SICCI - Sistema Intagrador do Centro de Cearense Idiomas
+                    </span>
+
+                    <h1 class="titulo-sessao">
+                        Bem-vindo
+                    </h1>
+
+                    <p class="subtitulo">
+                        Acesse o sistema acadêmico do CCI e gerencie
+                        alunos, notas, frequência e desempenho escolar.
+                    </p>
+
+                    <form method="POST" id="form-login">
+
+                        <div class="input-group">
+
+                            <div class="input-box">
+                                <i class="bi bi-envelope"></i>
+
+                                <input type="email" id="email" name="email" placeholder="Email" required>
+                            </div>
+
+                            <div class="input-box">
+                                <i class="bi bi-lock"></i>
+
+                                <input type="password" id="senha" name="senha" placeholder="Senha" required>
+                                <button class="eye" onclick="versenha()"></button>
+                            </div>
+
+                        </div>
+
+                        <a href="CORD_senha.html" class="forgot">
+                            Esqueceu a senha? Clique aqui!
+                        </a>
+
+                        <button type="submit" class="btn-cci">
+                            ENTRAR
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </section>
+
+            <section class="lado-identidade">
+                <div class="conteudo-identidade">
+                    <img class="img-cci" src="https://www.iandeshopping.com.br/wp-content/uploads/2020/03/cci.jpg"
+                        alt="Logo CCI">
+                    <h2 class="msg-boas-vindas">
+                        Centro de Cearense Idiomas
+                    </h2>
+
+                    <p>
+                        Plataforma inteligente para gestão acadêmica,
+                        controle de frequência, notas e desempenho
+                        dos alunos em tempo real.
+                    </p>
+
+
+
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        function versenha() {
+            var senha = document.getElementById("senha");
+            var versernha = document.getElementById("senha").innerHTML;
+        }
+    </script>
+    <script type="module" src="auth.js"></script>
+</body>
+
+</html>

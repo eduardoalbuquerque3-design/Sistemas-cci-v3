@@ -1,0 +1,358 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    min-height:100vh;
+
+    background:
+        radial-gradient(circle at top left,#14b8a61f,transparent 30%),
+        radial-gradient(circle at bottom right,#06b6d41f,transparent 30%),
+        #020817;
+
+    overflow:hidden;
+}
+
+.wrapper{
+    width:100%;
+    min-height:100vh;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:30px;
+}
+
+/* CARD */
+
+.card-recuperacao{
+    width:1150px;
+    max-width:100%;
+
+    min-height:650px;
+
+    background:rgba(255,255,255,.04);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:36px;
+
+    overflow:hidden;
+
+    display:flex;
+
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.45),
+        inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+/* ===================================
+   LADO INFO
+=================================== */
+
+.lado-info{
+    flex:1;
+
+    position:relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(20,184,166,.95),
+            rgba(6,182,212,.95)
+        );
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    overflow:hidden;
+}
+
+.overlay{
+    position:absolute;
+    inset:0;
+
+    background:
+        radial-gradient(circle at top,#ffffff30,transparent 35%),
+        radial-gradient(circle at bottom,#00000025,transparent 40%);
+}
+
+.conteudo-info{
+    position:relative;
+    z-index:2;
+
+    text-align:center;
+
+    padding:50px;
+
+    max-width:480px;
+
+    color:#fff;
+}
+
+.logo-cci{
+    width:140px;
+    height:140px;
+
+    border-radius:30px;
+
+    object-fit:cover;
+
+    margin-bottom:30px;
+
+    border:5px solid rgba(255,255,255,.15);
+
+    box-shadow:
+        0 20px 40px rgba(0,0,0,.25);
+}
+
+.conteudo-info h1{
+    font-size:42px;
+    line-height:1.1;
+
+    margin-bottom:18px;
+}
+
+.conteudo-info p{
+    font-size:16px;
+    line-height:1.7;
+
+    color:#ecfeff;
+
+    margin-bottom:35px;
+}
+
+.btn-voltar{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+
+    text-decoration:none;
+
+    color:#fff;
+
+    border:1px solid rgba(255,255,255,.3);
+
+    padding:14px 24px;
+
+    border-radius:18px;
+
+    transition:.3s;
+}
+
+.btn-voltar:hover{
+    background:#fff;
+    color:#0891b2;
+
+    transform:translateY(-3px);
+}
+
+/* ===================================
+   FORM
+=================================== */
+
+.lado-form{
+    flex:1;
+
+    background:#07152f;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:50px;
+}
+
+.form-container{
+    width:100%;
+    max-width:420px;
+}
+
+.mini-tag{
+    display:inline-block;
+
+    background:rgba(20,184,166,.15);
+
+    color:#5eead4;
+
+    border:1px solid rgba(45,212,191,.2);
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    font-size:13px;
+
+    margin-bottom:22px;
+}
+
+.form-container h2{
+    font-size:38px;
+
+    line-height:1.1;
+
+    margin-bottom:14px;
+
+    color:#fff;
+}
+
+.subtexto{
+    color:#94a3b8;
+
+    line-height:1.7;
+
+    margin-bottom:35px;
+}
+
+/* INPUT */
+
+.input-group{
+    margin-bottom:28px;
+}
+
+.input-group label{
+    display:block;
+
+    color:#cbd5e1;
+
+    margin-bottom:10px;
+
+    font-size:14px;
+}
+
+.input-box{
+    width:100%;
+
+    background:#0f172a;
+
+    border:1px solid rgba(255,255,255,.06);
+
+    border-radius:18px;
+
+    display:flex;
+    align-items:center;
+
+    padding:0 16px;
+
+    transition:.3s;
+}
+
+.input-box:focus-within{
+    border-color:#2dd4bf;
+
+    box-shadow:
+        0 0 0 4px rgba(45,212,191,.12);
+}
+
+.input-box i{
+    color:#64748b;
+
+    font-size:18px;
+}
+
+.input-box input{
+    flex:1;
+
+    background:none;
+    border:none;
+    outline:none;
+
+    padding:18px 14px;
+
+    color:#fff;
+
+    font-size:15px;
+}
+
+.input-box input::placeholder{
+    color:#64748b;
+}
+
+/* BOTÃO */
+
+.btn-enviar{
+    width:100%;
+
+    border:none;
+
+    background:
+        linear-gradient(
+            90deg,
+            #14b8a6,
+            #06b6d4
+        );
+
+    color:#fff;
+
+    padding:18px;
+
+    border-radius:18px;
+
+    font-size:15px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+
+    transition:.35s;
+}
+
+.btn-enviar:hover{
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 20px 40px rgba(20,184,166,.25);
+}
+
+/* ===================================
+   RESPONSIVO
+=================================== */
+
+@media(max-width:950px){
+
+    .card-recuperacao{
+        flex-direction:column;
+    }
+
+    .lado-info{
+        min-height:320px;
+    }
+
+    .conteudo-info h1{
+        font-size:34px;
+    }
+
+}
+
+@media(max-width:600px){
+
+    .wrapper{
+        padding:15px;
+    }
+
+    .lado-form,
+    .conteudo-info{
+        padding:30px;
+    }
+
+    .form-container h2{
+        font-size:30px;
+    }
+
+    .logo-cci{
+        width:110px;
+        height:110px;
+    }
+
+}

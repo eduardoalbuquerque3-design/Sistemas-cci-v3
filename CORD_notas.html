@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCI - Sistema de Notas</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <div>
+
+            <div class="logo-area">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhCEBRiOnJ4WSaugF7R9v1NsEo_3cIbNliFA&s"
+                    class="logo-img">
+            </div>
+
+            <div class="menu-links">
+
+                <a href="CORD_painel.html" class="nav-link-custom">
+                    <span class="material-icons-outlined">home</span>
+                    Inicio
+                </a>
+
+                <a href="CORD_turmas.html" class="nav-link-custom">
+                    <span class="material-icons-outlined">groups</span>
+                    Turmas
+                </a>
+
+                <a href="CORD_notas.html" class="nav-link-custom active">
+                    <span class="material-icons-outlined">edit_note</span>
+                    Notas
+                </a>
+
+                <a href="CORD_dashboard.html" class="nav-link-custom">
+                    <span class="material-icons-outlined">leaderboard</span>
+                    Painel
+                </a>
+
+            </div>
+
+        </div>
+
+        <button class="btn-sair" onclick="fazerLogout()">
+            <span class="material-icons-outlined">logout</span>
+            Sair
+        </button>
+
+    </aside>
+
+    <main class="main-content-notas">
+
+        <section class="hero-notas notas-hero-notas">
+
+            <div>
+                <h1>
+                    Sistema de
+                    <span>Lançamento de Notas</span>
+                </h1>
+
+                <p>
+                    Gerencie notas, médias e desempenho acadêmico dos alunos.
+                </p>
+            </div>
+
+            <div class="hero-actions-notas">
+
+                <button class="btn-outline" onclick="exportarPDF()">
+                    <span class="material-icons-outlined">picture_as_pdf</span>
+                    Exportar PDF
+                </button>
+
+                <button id="btn-editar-notas" class="btn-green" onclick="toggleEdicao()">
+                    <span class="material-icons-outlined">edit</span>
+                    Editar
+                </button>
+                
+                <button class="btn-green" onclick="document.getElementById('importarNotas').click()">
+                    <span class="material-icons-outlined">
+                        upload
+                    </span>
+                    Importar Planilha
+                </button>
+
+                <input type="file" id="importarNotas" accept=".xlsx,.csv" hidden>
+
+            </div>
+
+        </section>
+
+        <section class="notas-layout-notas">
+
+            <aside class="students-panel-notas">
+
+                <div class="panel-top-notas">
+
+                    <h2>Alunos</h2>
+
+                    <div class="filtro-wrapper-notas">
+
+                        <span class="material-icons-outlined">
+                            filter_alt
+                        </span>
+
+                        <select id="filtro-turma" onchange="renderizarListaFiltrada()">
+                            <option value="todos">
+                                Todas as Turmas
+                            </option>
+                        </select>
+
+                    </div>
+
+                    <div class="search-box-notas">
+
+                        <span class="material-icons-outlined">
+                            search
+                        </span>
+
+                        <input type="text" id="busca-aluno" placeholder="Pesquisar aluno..."
+                            onkeyup="filtrarListaAlunos()">
+
+                    </div>
+
+                </div>
+
+                <ul class="student-list-notas" id="student-list">
+                    <li class="loading-student-notas">
+                        Carregando alunos...
+                    </li>
+                </ul>
+
+            </aside>
+
+            <section class="boletim-panel-notas">
+
+                <div class="boletim-header-notas">
+
+                    <div>
+
+                        <input type="hidden" id="current-student-id">
+
+                        <h2 id="display-name">
+                            Selecione um aluno
+                        </h2>
+
+                        <p>
+                            Turma:
+                            <strong id="display-course">---</strong>
+                        </p>
+
+                    </div>
+
+                    <div class="media-final-card-notas">
+
+                        <span>Média Final</span>
+
+                        <strong id="display-final">
+                            0.0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+                <div id="periodos-container" class="periodos-grid-notas">
+
+                    <div class="placeholder-aviso-notas">
+
+                        <span class="material-icons-outlined">
+                            school
+                        </span>
+
+                        <p>
+                            Escolha um aluno para visualizar as notas.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+    <script>
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvSOKw2VTeG1uMDqDn3-SWi0Hsf2z6i2w",
+            authDomain: "sistema-cci-2026.firebaseapp.com",
+            databaseURL: "https://sistema-cci-default-rtdb.firebaseio.com/",
+            projectId: "sistema-cci-2026",
+            storageBucket: "sistema-cci-2026.firebasestorage.app",
+            messagingSenderId: "633401547904",
+            appId: "1:633401547904:web:0572615ffba4227a6f5a65"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const db = firebase.database();
+
+        let todosOsAlunos = {};
+        let editando = false;
+
+        function iniciarAplicacao() {
+
+            db.ref('alunos').on('value', (snapshot) => {
+
+                todosOsAlunos = snapshot.val();
+
+                atualizarSeletorTurmas();
+
+                renderizarListaFiltrada();
+
+            });
+
+        }
+
+        function atualizarSeletorTurmas() {
+
+            const select = document.getElementById('filtro-turma');
+
+            const turmas = new Set();
+
+            if (todosOsAlunos) {
+
+                Object.values(todosOsAlunos).forEach(aluno => {
+
+                    if (aluno.turma) {
+                        turmas.add(aluno.turma);
+                    }
+
+                });
+
+            }
+
+            select.innerHTML =
+                '<option value="todos">Todas as Turmas</option>';
+
+            Array.from(turmas).sort().forEach(turma => {
+
+                const option = document.createElement('option');
+
+                option.value = turma;
+
+                option.innerText = turma;
+
+                select.appendChild(option);
+
+            });
+
+        }
+
+        function renderizarListaFiltrada() {
+
+            const lista = document.getElementById('student-list');
+
+            const filtro =
+                document.getElementById('filtro-turma').value;
+
+            lista.innerHTML = "";
+
+            if (!todosOsAlunos) {
+
+                lista.innerHTML =
+                    "<li class='loading-student-notas'>Nenhum aluno encontrado.</li>";
+
+                return;
+
+            }
+
+            Object.keys(todosOsAlunos).forEach(id => {
+
+                const aluno = todosOsAlunos[id];
+
+                if (filtro === "todos" || aluno.turma === filtro) {
+
+                    const nome =
+                        aluno.nome_completo ||
+                        aluno.nome ||
+                        "Sem Nome";
+
+                    lista.innerHTML += `
+
+                        <li>
+
+                            <button class="student-item-btn"
+                                id="btn-${id}"
+                                onclick="selecionarAluno('${id}')">
+
+                                <span class="material-icons-outlined">
+                                    person
+                                </span>
+
+                                ${nome}
+
+                            </button>
+
+                        </li>
+
+                    `;
+
+                }
+
+            });
+
+        }
+
+        function selecionarAluno(id) {
+
+            document.querySelectorAll('.student-item-btn')
+                .forEach(btn => btn.classList.remove('active-student'));
+
+            document.getElementById(`btn-${id}`)
+                .classList.add('active-student');
+
+            const aluno = todosOsAlunos[id];
+
+            document.getElementById('current-student-id').value = id;
+
+            document.getElementById('display-name').innerText =
+                aluno.nome_completo || aluno.nome || "---";
+
+            document.getElementById('display-course').innerText =
+                aluno.turma || "---";
+
+            renderizarNotas(aluno.notas);
+
+            editando = false;
+
+            atualizarBotao();
+
+        }
+
+        function renderizarNotas(notasExistentes) {
+
+            const container =
+                document.getElementById('periodos-container');
+
+            container.innerHTML = "";
+
+            let soma = 0;
+
+            for (let i = 1; i <= 4; i++) {
+
+                const chave = `p${i}`;
+
+                const n = (notasExistentes && notasExistentes[chave])
+                    ? notasExistentes[chave]
+                    : { n1: 0, n2: 0 };
+
+                const n1 = parseFloat(n.n1 || 0);
+
+                const n2 = parseFloat(n.n2 || 0);
+
+                const media = (n1 + n2).toFixed(1);
+
+                soma += parseFloat(media);
+
+                container.innerHTML += `
+
+                    <div class="periodo-card-notas">
+
+                        <div class="periodo-top-notas">
+
+                            <h3>${i}º Período</h3>
+
+                            <div class="media-badge-notas">
+                                ${media}
+                            </div>
+
+                        </div>
+
+                        <div class="inputs-grid-notas">
+
+                            <div class="input-group-notas">
+
+                                <label>N1</label>
+
+                                <input type="number"
+                                    step="0.1"
+                                    min="0"
+                                    max="8"
+                                    class="edit-nota"
+                                    data-p="${chave}"
+                                    data-tipo="n1"
+                                    value="${n1}"
+                                    disabled>
+
+                            </div>
+
+                            <div class="input-group-notas">
+
+                                <label>N2</label>
+
+                                <input type="number"
+                                    step="0.1"
+                                    min="0"
+                                    max="2"
+                                    class="edit-nota"
+                                    data-p="${chave}"
+                                    data-tipo="n2"
+                                    value="${n2}"
+                                    disabled>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+
+            document.getElementById('display-final')
+                .innerText = (soma / 4).toFixed(1);
+
+        }
+
+        function toggleEdicao() {
+
+            const id =
+                document.getElementById('current-student-id').value;
+
+            if (!id) {
+
+                Swal.fire(
+                    'Aviso',
+                    'Selecione um aluno primeiro.',
+                    'warning'
+                );
+
+                return;
+
+            }
+
+            if (editando) {
+
+                const novasNotas = {};
+
+                document.querySelectorAll('.edit-nota')
+                    .forEach(input => {
+
+                        const p = input.dataset.p;
+
+                        const tipo = input.dataset.tipo;
+
+                        if (!novasNotas[p]) {
+                            novasNotas[p] = {};
+                        }
+
+                        novasNotas[p][tipo] =
+                            parseFloat(input.value) || 0;
+
+                    });
+
+                db.ref(`alunos/${id}/notas`)
+                    .update(novasNotas)
+                    .then(() => {
+
+                        Swal.fire(
+                            'Sucesso!',
+                            'Notas atualizadas.',
+                            'success'
+                        );
+
+                    });
+
+            }
+
+            editando = !editando;
+
+            document.querySelectorAll('.edit-nota')
+                .forEach(i => i.disabled = !editando);
+
+            atualizarBotao();
+
+        }
+
+        function atualizarBotao() {
+
+            const btn =
+                document.getElementById('btn-editar-notas');
+
+            btn.innerHTML = editando
+                ? `<span class="material-icons-outlined">save</span>Salvar`
+                : `<span class="material-icons-outlined">edit</span>Editar`;
+
+        }
+
+        function filtrarListaAlunos() {
+
+            const busca =
+                document.getElementById('busca-aluno')
+                    .value.toLowerCase();
+
+            document.querySelectorAll('.student-item-btn')
+                .forEach(btn => {
+
+                    const nome =
+                        btn.innerText.toLowerCase();
+
+                    btn.parentElement.style.display =
+                        nome.includes(busca)
+                            ? ""
+                            : "none";
+
+                });
+
+        }
+
+        function exportarPDF() {
+
+            const nome =
+                document.getElementById('display-name').innerText;
+
+            if (nome === "Selecione um aluno") {
+
+                Swal.fire(
+                    'Aviso',
+                    'Selecione um aluno primeiro.',
+                    'warning'
+                );
+
+                return;
+            }
+
+            const tituloOriginal = document.title;
+
+            document.title = `Boletim_${nome}`;
+
+            window.print();
+
+            setTimeout(() => {
+                document.title = tituloOriginal;
+            }, 1000);
+
+        }
+
+        function fazerLogout() {
+
+            Swal.fire({
+                title: 'Deseja sair?',
+                icon: 'question',
+                background: '#0f172a',
+                color: '#fff',
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#334155',
+                showCancelButton: true,
+                confirmButtonText: 'Sair'
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    localStorage.clear();
+
+                    window.location.href = "telalogin.html";
+
+                }
+
+            });
+
+        }
+
+        iniciarAplicacao();
+        document
+            .getElementById('importarNotas')
+            .addEventListener('change', importarPlanilha);
+
+        async function importarPlanilha(event) {
+
+            const arquivo = event.target.files[0];
+
+            if (!arquivo) return;
+
+            const reader = new FileReader();
+
+            reader.onload = async function (e) {
+
+                const data = new Uint8Array(e.target.result);
+
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                const sheet =
+                    workbook.Sheets[workbook.SheetNames[0]];
+
+                const linhas =
+                    XLSX.utils.sheet_to_json(sheet);
+
+                if (!linhas.length) {
+
+                    Swal.fire(
+                        'Erro',
+                        'Planilha vazia.',
+                        'error'
+                    );
+
+                    return;
+                }
+
+                let atualizados = 0;
+
+                const snapshot =
+                    await db.ref('alunos').once('value');
+
+                const alunos = snapshot.val();
+
+                for (const linha of linhas) {
+
+                    const nomePlanilha =
+                        String(linha.nome || "")
+                            .trim()
+                            .toLowerCase();
+
+                    const alunoEncontrado = Object.keys(alunos)
+                        .find(id => {
+
+                            const nomeSistema =
+                                String(
+                                    alunos[id].nome_completo ||
+                                    alunos[id].nome ||
+                                    ""
+                                )
+                                    .trim()
+                                    .toLowerCase();
+
+                            return nomeSistema === nomePlanilha;
+
+                        });
+
+                    if (alunoEncontrado) {
+
+                        const notas = {
+
+                            p1: {
+                                n1: parseFloat(linha.p1n1 || 0),
+                                n2: parseFloat(linha.p1n2 || 0)
+                            },
+
+                            p2: {
+                                n1: parseFloat(linha.p2n1 || 0),
+                                n2: parseFloat(linha.p2n2 || 0)
+                            },
+
+                            p3: {
+                                n1: parseFloat(linha.p3n1 || 0),
+                                n2: parseFloat(linha.p3n2 || 0)
+                            },
+
+                            p4: {
+                                n1: parseFloat(linha.p4n1 || 0),
+                                n2: parseFloat(linha.p4n2 || 0)
+                            }
+
+                        };
+
+                        await db
+                            .ref(`alunos/${alunoEncontrado}/notas`)
+                            .set(notas);
+
+                        atualizados++;
+                    }
+
+                }
+
+                Swal.fire(
+                    'Sucesso!',
+                    `${atualizados} alunos atualizados.`,
+                    'success'
+                );
+
+            };
+
+            reader.readAsArrayBuffer(arquivo);
+
+        }
+        // Executa assim que a página carrega para verificar a escolha anterior do usuário
+document.addEventListener("DOMContentLoaded", function() {
+    const temaSalvo = localStorage.getItem("tema-escolhido");
+    
+    if (temaSalvo === "light") {
+        document.body.classList.add("light-theme");
+        atualizarInterfaceBotao(true);
+    }
+});
+
+function alternarTema() {
+    const body = document.body;
+    body.classList.toggle("light-theme");
+    
+    const ehModoClaro = body.classList.contains("light-theme");
+    
+    // Salva o estado atual no navegador
+    localStorage.setItem("tema-escolhido", ehModoClaro ? "light" : "dark");
+    
+    atualizarInterfaceBotao(ehModoClaro);
+}
+
+function atualizarInterfaceBotao(ehModoClaro) {
+    const icone = document.getElementById("tema-icon");
+    const texto = document.getElementById("tema-texto");
+    
+    if (icone && texto) {
+        if (ehModoClaro) {
+            icone.textContent = "dark_mode";
+            texto.textContent = "Modo Escuro";
+        } else {
+            icone.textContent = "light_mode";
+            texto.textContent = "Modo Claro";
+        }
+    }
+}
+    </script>
+
+</body>
+
+</html>

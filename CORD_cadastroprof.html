@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cadastro de Professores</title>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <div>
+
+            <div class="logo-area">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhCEBRiOnJ4WSaugF7R9v1NsEo_3cIbNliFA&s"
+                    class="logo-img">
+            </div>
+
+            <div class="menu-links">
+
+                <a href="CORD_painel.html" class="nav-link-custom ">
+                    <span class="material-icons-outlined">home</span>
+                    Inicio
+                </a>
+
+                <a href="CORD_turmas.html" class="nav-link-custom">
+                    <span class="material-icons-outlined">groups</span>
+                    Turmas
+                </a>
+
+                <a href="CORD_notas.html" class="nav-link-custom">
+                    <span class="material-icons-outlined">edit_note</span>
+                    Notas
+                </a>
+
+                <a href="CORD_dashboard.html" class="nav-link-custom">
+                    <span class="material-icons-outlined">leaderboard</span>
+                    Painel
+                </a>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+    <main class="main-content-cadastroprofessor">
+
+        <section class="hero-top-cadastroprofessor">
+
+            <div>
+                <h1>Cadastro de <span>Professores</span></h1>
+                <p>Gerencie e cadastre novos professores no sistema.</p>
+            </div>
+
+        </section>
+
+        <section class="form-card-cadastroprofessor">
+
+            <form id="formCadastro" class="form-corpo-cadastroprofessor">
+
+                <div class="input-group-cadastroprofessor full-cadastroprofessor">
+                    <label>Nome Completo</label>
+                    <input type="text" id="nome" placeholder="Digite o nome" required>
+                </div>
+
+                <div class="input-group-cadastroprofessor">
+                    <label>CPF</label>
+                    <input type="text" id="cpf" placeholder="Digite o CPF" required maxlength="14"
+                        oninput="mascaraCPF(this)">
+                </div>
+
+                <div class="input-group-cadastroprofessor">
+                    <label>Disciplina</label>
+                    <input type="text" id="disciplina" placeholder="Digite a disciplina" required>
+                </div>
+
+                <div class="input-group-cadastroprofessor">
+                    <label>Horário de Estudo</label>
+                    <select id="horario_cci">
+                        <option value="0">17:00 - 18:15</option>
+                        <option value="1">18:30 - 19:45</option>
+                        <option value="2">19:45 - 21:00</option>
+                        <option value="3">21:00 - 22:15</option>
+                    </select>
+                </div>
+
+                <div class="input-group-cadastroprofessor full-cadastroprofessor">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="Digite o email" required>
+                </div>
+
+                <button type="submit" class="btn-cadastrar">
+                    <span class="material-icons-outlined">how_to_reg</span>
+                    Cadastrar Professor
+                </button>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <script type="module" src="CORD_cadastroprofessor.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <script>
+        function mascaraCPF(i) {
+            let v = i.value.replace(/\D/g, "");
+            if (v.length <= 14) {
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            }
+            i.value = v;
+        }
+        function fazerLogout() {
+            if (confirm("Deseja realmente sair?")) {
+                localStorage.clear();
+                window.location.href = "index.html";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
