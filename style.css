@@ -27,7 +27,8 @@ body.light-theme .header-dashboard p,
 body.light-theme .input-group-notas label,
 body.light-theme .boletim-header-notas p,
 body.light-theme .filter-section-dashboard span {
-    color: #475569 !important; /* Cinza escuro legível para o fundo claro */
+    color: #475569 !important;
+    /* Cinza escuro legível para o fundo claro */
 }
 
 body.light-theme .card-cci-painel,
@@ -42,10 +43,10 @@ body.light-theme .stat-item-dashboard {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
 }
 
-body.light-theme h1, 
-body.light-theme h2, 
-body.light-theme h3, 
-body.light-theme th, 
+body.light-theme h1,
+body.light-theme h2,
+body.light-theme h3,
+body.light-theme th,
 body.light-theme td,
 body.light-theme .titulo-card-painel {
     color: #0f172a !important;
@@ -87,7 +88,8 @@ body.light-theme .info-group-turmas input {
     cursor: pointer;
     transition: 0.3s;
     width: 100%;
-    margin-bottom: 15px; /* margem para não colar no botão de Sair */
+    margin-bottom: 15px;
+    /* margem para não colar no botão de Sair */
 }
 
 .btn-tema:hover {
@@ -98,9 +100,40 @@ body.light-theme .info-group-turmas input {
 .btn-tema .material-icons-outlined {
     font-size: 22px;
 }
+
 /*--------------tela painel------------*/
+
+/* ==========================================================================
+   ESTRUTURA GLOBAL (Ajustado para evitar rolagem indesejada na tela cheia)
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    height: 100vh; /* Força o corpo a ter exatamente a altura da tela */
+    display: flex; /* Define o layout em linha (Sidebar + Conteúdo) */
+    overflow: hidden; /* Impede que a tela inteira role */
+    background-color: #020817; /* Cor escura padrão de fundo */
+    color: #fff;
+}
+
+/* Garante o comportamento correto quando o tema claro for ativado */
+body.light-theme {
+    background-color: #f8fafc;
+    color: #0f172a;
+}
+
+/* ==========================================================================
+   SIDEBAR (Ajustada para fixar na lateral esquerda)
+   ========================================================================== */
 .sidebar {
     width: 260px;
+    height: 100%; /* Ocupa toda a altura do body */
     background: linear-gradient(180deg, #07152f, #020817);
     border-right: 1px solid rgba(255, 255, 255, .05);
     padding: 30px 20px;
@@ -110,10 +143,11 @@ body.light-theme .info-group-turmas input {
     flex-shrink: 0;
 }
 
+/* Ajuste fino para a logo */
 .logo-area {
     display: flex;
     justify-content: center;
-    margin-bottom: 45px;
+    margin-bottom: 35px;
 }
 
 .logo-img {
@@ -126,13 +160,13 @@ body.light-theme .info-group-turmas input {
 .menu-links {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 12px; /* Reduzido levemente para economizar espaço vertical */
 }
 
 .nav-link-custom {
     text-decoration: none;
     color: #dbeafe;
-    padding: 16px 18px;
+    padding: 14px 18px;
     border-radius: 18px;
     display: flex;
     align-items: center;
@@ -163,32 +197,39 @@ body.light-theme .info-group-turmas input {
     gap: 10px;
     cursor: pointer;
     transition: .3s;
+    padding: 10px 5px;
 }
 
 .btn-sair:hover {
     color: #ff4d6d;
 }
 
-/* MAIN */
-
+/* ==========================================================================
+   CONTEÚDO PRINCIPAL (Onde a rolagem deve acontecer se o conteúdo transbordar)
+   ========================================================================== */
 .main-content-painel {
     flex: 1;
-    padding: 30px 40px;
+    height: 100%;
+    padding: 40px;
+    overflow-y: auto; /* Permite rolagem vertical APENAS aqui dentro se necessário */
+    display: flex;
+    flex-direction: column;
 }
 
-/* HERO */
-
+/* ==========================================================================
+   HERO / TOPO DO PAINEL
+   ========================================================================== */
 .hero-painel {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 60px;
+    margin-bottom: 40px; /* Reduzido de 60px para aproximar os elementos */
     gap: 30px;
     flex-wrap: wrap;
 }
 
 .titulo-painel {
-    font-size: 52px;
+    font-size: 42px; /* Reduzido de 52px para melhor equilíbrio visual */
     margin-bottom: 10px;
     line-height: 1.1;
 }
@@ -199,7 +240,7 @@ body.light-theme .info-group-turmas input {
 
 .descricao-painel {
     color: #94a3b8;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .hero-actions-painel {
@@ -208,13 +249,40 @@ body.light-theme .info-group-turmas input {
     flex-wrap: wrap;
 }
 
-/* BUTTONS */
+/* BOTÃO DE TEMA (Posicionado de forma limpa acima dos cards) */
+.btn-tema {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start; /* Não estica o botão */
+    gap: 10px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, .05);
+    border: 1px solid rgba(255, 255, 255, .08);
+    color: inherit;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-bottom: 25px;
+}
 
+.btn-tema:hover {
+    background: rgba(255, 255, 255, .1);
+}
+
+/* Suporte ao tema claro no botão de tema */
+body.light-theme .btn-tema {
+    background: rgba(0, 0, 0, .05);
+    border: 1px solid rgba(0, 0, 0, .08);
+}
+
+/* ==========================================================================
+   BOTÕES DE AÇÃO
+   ========================================================================== */
 .btn-warning-custom {
     background: linear-gradient(90deg, #f59e0b, #d97706);
     border: none;
     color: white;
-    padding: 16px 24px;
+    padding: 14px 22px;
     border-radius: 16px;
     cursor: pointer;
     display: flex;
@@ -233,7 +301,7 @@ body.light-theme .info-group-turmas input {
     background: linear-gradient(90deg, #16a34a, #15803d);
     color: white;
     text-decoration: none;
-    padding: 16px 24px;
+    padding: 14px 22px;
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -251,7 +319,7 @@ body.light-theme .info-group-turmas input {
     border: 1px solid rgba(255, 255, 255, .1);
     color: white;
     text-decoration: none;
-    padding: 16px 24px;
+    padding: 14px 22px;
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -264,18 +332,25 @@ body.light-theme .info-group-turmas input {
     background: rgba(255, 255, 255, .05);
 }
 
-/* CARDS */
+body.light-theme .btn-outline {
+    border: 1px solid rgba(0, 0, 0, .1);
+    color: #0f172a;
+}
 
+/* ==========================================================================
+   CARDS GRID
+   ========================================================================== */
 .cards-grid-painel {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: auto; /* Empurra os cards para baixo se houver espaço sobressalente */
 }
 
 .card-cci-painel {
     background: linear-gradient(180deg, #07152f, #06101f);
-    border-radius: 28px;
-    padding: 40px 35px;
+    border-radius: 24px;
+    padding: 30px 25px;
     position: relative;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, .06);
@@ -283,8 +358,14 @@ body.light-theme .info-group-turmas input {
     cursor: pointer;
 }
 
+body.light-theme .card-cci-painel {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, .06);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.02);
+}
+
 .card-cci-painel:hover {
-    transform: translateY(-10px);
+    transform: translateY(-5px);
 }
 
 .card-cci-painel::before {
@@ -298,101 +379,104 @@ body.light-theme .info-group-turmas input {
     opacity: .08;
 }
 
-.card-cci-painel:nth-child(1)::before {
-    background: #22c55e;
-}
-
-.card-cci-painel:nth-child(2)::before {
-    background: #3b82f6;
-}
-
-.card-cci-painel:nth-child(3)::before {
-    background: #06b6d4;
-}
+.card-cci-painel:nth-child(1)::before { background: #22c55e; }
+.card-cci-painel:nth-child(2)::before { background: #3b82f6; }
+.card-cci-painel:nth-child(3)::before { background: #06b6d4; }
 
 .card-icon-painel {
-    width: 90px;
-    height: 90px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .card-icon-painel .material-icons-outlined {
-    font-size: 40px;
+    font-size: 32px;
 }
 
-.green-painel {
-    background: rgba(34, 197, 94, .15);
-    color: #22c55e;
-}
-
-.blue-painel {
-    background: rgba(59, 130, 246, .15);
-    color: #3b82f6;
-}
-
-.cyan-painel {
-    background: rgba(6, 182, 212, .15);
-    color: #06b6d4;
-}
+.green-painel { background: rgba(34, 197, 94, .15); color: #22c55e; }
+.blue-painel { background: rgba(59, 130, 246, .15); color: #3b82f6; }
+.cyan-painel { background: rgba(6, 182, 212, .15); color: #06b6d4; }
 
 .titulo-card-painel {
-    font-size: 34px;
-    margin-bottom: 12px;
+    font-size: 26px; /* Ajustado de 34px */
+    margin-bottom: 8px;
+}
+
+body.light-theme .titulo-card-painel {
+    color: #0f172a;
 }
 
 .descricao-card-painel {
     color: #94a3b8;
-    font-size: 16px;
-    margin-bottom: 35px;
-    line-height: 1.6;
+    font-size: 15px;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+body.light-theme .descricao-card-painel {
+    color: #64748b;
 }
 
 .card-button {
-    width: 58px;
-    height: 58px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     border: none;
     background: rgba(255, 255, 255, .05);
     color: white;
     cursor: pointer;
     transition: .3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .card-button:hover {
     background: rgba(255, 255, 255, .1);
 }
 
-/* RESPONSIVO */
+body.light-theme .card-button {
+    background: rgba(0, 0, 0, .05);
+    color: #0f172a;
+}
 
-@media(max-width:1100px) {
-
+/* ==========================================================================
+   RESPONSIVIDADE (Ajustes de layout adaptável)
+   ========================================================================== */
+@media(max-width: 1100px) {
     body {
         flex-direction: column;
+        overflow-y: auto; /* Permite rolagem na página inteira no mobile/tablet */
+        height: auto;
     }
 
     .sidebar {
         width: 100%;
+        height: auto;
+    }
+
+    .main-content-painel {
+        height: auto;
+        overflow-y: visible;
     }
 
     .hero-painel {
         flex-direction: column;
         align-items: flex-start;
     }
-
 }
 
-@media(max-width:768px) {
-
+@media(max-width: 768px) {
     .main-content-painel {
-        padding: 25px;
+        padding: 20px;
     }
 
     .titulo-painel {
-        font-size: 38px;
+        font-size: 32px;
     }
 
     .hero-actions-painel {
@@ -404,23 +488,19 @@ body.light-theme .info-group-turmas input {
         width: 100%;
         justify-content: center;
     }
-
 }
 
+/* ==========================================================================
+   CONFIGURAÇÕES DE IMPRESSÃO
+   ========================================================================== */
 @media print {
-
     body {
         background: #fff !important;
         color: #000 !important;
         overflow: visible !important;
     }
 
-    .sidebar,
-    .controls,
-    .pdf-link,
-    .search-container,
-    .botoes-falta,
-    .modal {
+    .sidebar, .btn-tema, .card-button {
         display: none !important;
     }
 
@@ -429,39 +509,7 @@ body.light-theme .info-group-turmas input {
         overflow: visible !important;
         height: auto !important;
     }
-
-    .tabela-turma {
-        display: block !important;
-        overflow: visible !important;
-    }
-
-    table {
-        border: 1px solid #000;
-        background: #fff !important;
-        color: #000 !important;
-    }
-
-    th,
-    td {
-        color: #000 !important;
-        border: 1px solid #ccc;
-    }
-
-    .num-verde,
-    .num-vermelho {
-        color: #000 !important;
-    }
 }
-
-.btn-tema {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 20px;
-    background: rgba(255, 255, 255, .08);
-    border-radius: 16px;
-}
-
 /*-----------------------------------------tela turmas----------------------------------------------------*/
 /* =========================================
    RESET
@@ -2015,6 +2063,7 @@ ANIMAÇÕES
         opacity: 0;
         transform: translateY(15px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -2511,11 +2560,9 @@ RESPONSIVO
     flex: 1;
     position: relative;
     background:
-        linear-gradient(
-            135deg,
-            rgba(20,184,166,.95),
-            rgba(6,182,212,.95)
-        );
+        linear-gradient(135deg,
+            rgba(20, 184, 166, .95),
+            rgba(6, 182, 212, .95));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2676,11 +2723,9 @@ RESPONSIVO
     width: 100%;
     border: none;
     background:
-        linear-gradient(
-            90deg,
+        linear-gradient(90deg,
             #14b8a6,
-            #06b6d4
-        );
+            #06b6d4);
     color: #fff;
     padding: 18px;
     border-radius: 18px;
@@ -2809,6 +2854,7 @@ body::after {
     0% {
         left: -40%;
     }
+
     100% {
         left: 140%;
     }
@@ -2822,11 +2868,9 @@ body::after {
     flex: 1;
     position: relative;
     background:
-        linear-gradient(
-            135deg,
+        linear-gradient(135deg,
             rgba(20, 184, 166, .95),
-            rgba(6, 182, 212, .95)
-        );
+            rgba(6, 182, 212, .95));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2844,9 +2888,12 @@ body::after {
 }
 
 @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0px);
     }
+
     50% {
         transform: translateY(-20px);
     }
@@ -3005,7 +3052,8 @@ body::after {
     border: none;
     outline: none;
     padding: 18px 14px;
-    color: #fff; /* Corrigido de #110101 para branco para permitir a leitura do texto digitado */
+    color: #fff;
+    /* Corrigido de #110101 para branco para permitir a leitura do texto digitado */
     font-size: 15px;
     display: block;
 }
