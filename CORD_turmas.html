@@ -66,10 +66,10 @@
         <div class="controls-turmas" style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;">
             
             <div class="tabs-turmas">
-                <button class="tab active" onclick="abrirTurma(event, 'sala1')">Sala 01</button>
-                <button class="tab" onclick="abrirTurma(event, 'sala2')">Sala 02</button>
-                <button class="tab" onclick="abrirTurma(event, 'sala3')">Sala 03</button>
-                <button class="tab" onclick="abrirTurma(event, 'sala4')">Sala 04</button>
+                <button class="tab active" onclick="abrirTurma(event, 'sala1')">Professor 01</button>
+                <button class="tab" onclick="abrirTurma(event, 'sala2')">Professor 02</button>
+                <button class="tab" onclick="abrirTurma(event, 'sala3')">Professor 03</button>
+                <button class="tab" onclick="abrirTurma(event, 'sala4')">Professor 04</button>
             </div>
             <div class="search-container-turmas">
                 <input type="text" id="inputBusca" placeholder="Procurar aluno pelo nome..." onkeyup="filtrarTabela()">
@@ -80,16 +80,41 @@
                     <option value="ingles">Inglês</option>
                     <option value="espanhol">Espanhol</option>
                 </select>
+
+                <select class="semestre-select" id="filtroSemestre">
+                    <option value="1">Sala A - Inglês</option>
+                    <option value="1">Sala B - Inglês</option>
+                    <option value="1">Sala C - Inglês</option>
+                    <option value="1">Sala D - Inglês</option>
+                    <option value="1">Sala E - Inglês</option>
+                    <option value="1">Sala A - Espanhol</option>
+                    <option value="1">Sala B - Espanhol</option>
+                    <option value="1">Sala C - Espanhol</option>
+                    <option value="1">Sala D - Espanhol</option>
+                    <option value="1">Sala E - Espanhol</option>
+                </select>
                 
                 <select class="semestre-select" id="filtroSemestre">
                     <option value="1">1º Semestre</option>
                     <option value="2">2º Semestre</option>
-                    <option value="3">3º Semestre</option>
-                    <option value="4">4º Semestre</option>
                 </select>
                 
                 <select class="horario-select">
                     <option value="1">18:30 - 19:45</option>
+                </select>
+
+                <select class="semestre-select" id="filtroSemestre">
+                    <option value="1">Dia 1</option>
+                    <option value="2">Dia 2</option>
+                    <option value="3">Dia 3</option>
+                    <option value="4">Dia 4</option>
+                </select>
+
+                <select class="semestre-select" id="filtroSemestre">
+                    <option value="1">Módulo 1</option>
+                    <option value="2">Módulo 2</option>
+                    <option value="3">Módulo 3</option>
+                    <option value="4">Módulo 4</option>
                 </select>
             </div>
         </div>
@@ -212,7 +237,7 @@
         </div>
     </div>
 
-    <script src="carregaralunos.js"></script>
+    <script src ="carregaralunos.js"></script>
     <script>
         function fazerLogout() {
             Swal.fire({
