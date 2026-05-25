@@ -7,8 +7,11 @@
     <title>Gestão de Salas - CCI</title>
 
     <link rel="stylesheet" href="style.css">
+        <link rel="icon" href="CCI_LOGO.png"
+        style="border-radius: 50%;">
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -16,7 +19,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 </head>
 
 <body>
@@ -24,7 +27,8 @@
     <aside class="sidebar">
         <div>
             <div class="logo-area">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhCEBRiOnJ4WSaugF7R9v1NsEo_3cIbNliFA&s" class="logo-img">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhCEBRiOnJ4WSaugF7R9v1NsEo_3cIbNliFA&s"
+                    class="logo-img">
             </div>
 
             <div class="menu-links">
@@ -57,70 +61,56 @@
     </aside>
 
     <main class="main-content-turmas">
-        
+
         <header style="margin-bottom: 20px;">
             <h1 style="font-size: 28px; font-weight: 600;">Gestão de Salas</h1>
-            <p style="color: #94a3b8;">Gerencie a frequência e dados dos alunos por turma.</p>
+            <p style="color: #94a3b8;">Gerencie a frequência e dados dos alunos por turma e professor.</p>
         </header>
 
-        <div class="controls-turmas" style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;">
-            
+        <div class="controls-turmas"
+            style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;">
+
             <div class="tabs-turmas">
-                <button class="tab active" onclick="abrirTurma(event, 'sala1')">Professor 01</button>
-                <button class="tab" onclick="abrirTurma(event, 'sala2')">Professor 02</button>
-                <button class="tab" onclick="abrirTurma(event, 'sala3')">Professor 03</button>
-                <button class="tab" onclick="abrirTurma(event, 'sala4')">Professor 04</button>
+                <button class="tab active" onclick="abrirTurma(event, 'sala1')">Sala 01</button>
+                <button class="tab" onclick="abrirTurma(event, 'sala2')">Sala 02</button>
+                <button class="tab" onclick="abrirTurma(event, 'sala3')">Sala 03</button>
+                <button class="tab" onclick="abrirTurma(event, 'sala4')">Sala 04</button>
             </div>
             <div class="search-container-turmas">
                 <input type="text" id="inputBusca" placeholder="Procurar aluno pelo nome..." onkeyup="filtrarTabela()">
             </div>
-            
+
             <div class="filtros-aula-turmas">
-                <select class="disciplina-select" id="filtroDisciplina">
+                <select class="professor-select" id="filtroProfessor" onchange="carregarAlunos()">
+                    <option value="todos">Todos os Professores</option>
+                    <option value="Ananda">Ananda</option>
+                    <option value="Roesley">Roesley</option>
+                    <option value="Gabriele">Gabriele</option>
+                    <option value="Lúcia">Lúcia</option>
+                    <option value="Nataniel">Nataniel</option>
+                </select>
+
+                <select class="disciplina-select" id="filtroDisciplina" onchange="carregarAlunos()">
+                    <option value="todos">Todas as Disciplinas</option>
                     <option value="ingles">Inglês</option>
                     <option value="espanhol">Espanhol</option>
                 </select>
 
-                <select class="semestre-select" id="filtroSemestre">
-                    <option value="1">Sala A - Inglês</option>
-                    <option value="1">Sala B - Inglês</option>
-                    <option value="1">Sala C - Inglês</option>
-                    <option value="1">Sala D - Inglês</option>
-                    <option value="1">Sala E - Inglês</option>
-                    <option value="1">Sala A - Espanhol</option>
-                    <option value="1">Sala B - Espanhol</option>
-                    <option value="1">Sala C - Espanhol</option>
-                    <option value="1">Sala D - Espanhol</option>
-                    <option value="1">Sala E - Espanhol</option>
+                <select class="semestre-select" id="filtroSemestre" onchange="carregarAlunos()">
+                    <option value="semestre1">1º Semestre</option>
+                    <option value="semestre2">2º Semestre</option>
                 </select>
-                
-                <select class="semestre-select" id="filtroSemestre">
-                    <option value="1">1º Semestre</option>
-                    <option value="2">2º Semestre</option>
-                </select>
-                
-                <select class="horario-select">
+
+                <select class="horario-select" id="filtroHorario" onchange="carregarAlunos()">
+                    <option value="todos">Todos os Horários</option>
                     <option value="1">18:30 - 19:45</option>
-                </select>
-
-                <select class="semestre-select" id="filtroSemestre">
-                    <option value="1">Dia 1</option>
-                    <option value="2">Dia 2</option>
-                    <option value="3">Dia 3</option>
-                    <option value="4">Dia 4</option>
-                </select>
-
-                <select class="semestre-select" id="filtroSemestre">
-                    <option value="1">Módulo 1</option>
-                    <option value="2">Módulo 2</option>
-                    <option value="3">Módulo 3</option>
-                    <option value="4">Módulo 4</option>
+                    <option value="2">20:00 - 21:15</option>
                 </select>
             </div>
         </div>
-        
+
         <section class="content-section-turmas">
-            
+
             <div id="sala1" class="tabela-turma-turmas ativa-turmas">
                 <table>
                     <thead>
@@ -134,9 +124,6 @@
             </div>
 
             <div id="sala2" class="tabela-turma-turmas">
-                <div class="search-container-turmas" style="margin-bottom: 20px;">
-                    <input type="text" placeholder="Procurar aluno pelo nome..." onkeyup="filtrarTabela()">
-                </div>
                 <table>
                     <thead>
                         <tr>
@@ -149,16 +136,33 @@
             </div>
 
             <div id="sala3" class="tabela-turma-turmas">
-                <table><thead><tr><th>Nome do Aluno</th><th>Frequência</th></tr></thead><tbody></tbody></table>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome do Aluno</th>
+                            <th>Frequência</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
             <div id="sala4" class="tabela-turma-turmas">
-                <table><thead><tr><th>Nome do Aluno</th><th>Frequência</th></tr></thead><tbody></tbody></table>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome do Aluno</th>
+                            <th>Frequência</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
 
         </section>
 
         <div>
-            <button class="pdf-link" onclick="exportarPDF()" style="display: flex; align-items: center; gap: 8px; background: #3b82f6; border-radius: 12px; padding: 12px 24px;">
+            <button class="pdf-link" onclick="exportarPDF()"
+                style="display: flex; align-items: center; gap: 8px; background: #3b82f6; border-radius: 12px; padding: 12px 24px;">
                 <span class="material-icons-outlined">picture_as_pdf</span> Exportar para PDF
             </button>
         </div>
@@ -232,12 +236,13 @@
 
             <div class="modal-footer-turmas">
                 <button id="btn-editar" class="btn-edit" onclick="habilitarEdicao()">Editar Informações</button>
-                <button id="btn-salvar" class="btn-save" style="display:none;" onclick="salvarEdicao()">Salvar Alterações</button>
+                <button id="btn-salvar" class="btn-save" style="display:none;" onclick="salvarEdicao()">Salvar
+                    Alterações</button>
             </div>
         </div>
     </div>
 
-    <script src ="carregaralunos.js"></script>
+    <script type="module" src="carregaralunos.js"></script>
     <script>
         function fazerLogout() {
             Swal.fire({
@@ -256,42 +261,37 @@
                 }
             });
         }
-        // Executa assim que a página carrega para verificar a escolha anterior do usuário
-document.addEventListener("DOMContentLoaded", function() {
-    const temaSalvo = localStorage.getItem("tema-escolhido");
-    
-    if (temaSalvo === "light") {
-        document.body.classList.add("light-theme");
-        atualizarInterfaceBotao(true);
-    }
-});
 
-function alternarTema() {
-    const body = document.body;
-    body.classList.toggle("light-theme");
-    
-    const ehModoClaro = body.classList.contains("light-theme");
-    
-    // Salva o estado atual no navegador
-    localStorage.setItem("tema-escolhido", ehModoClaro ? "light" : "dark");
-    
-    atualizarInterfaceBotao(ehModoClaro);
-}
+        document.addEventListener("DOMContentLoaded", function () {
+            const temaSalvo = localStorage.getItem("tema-escolhido");
+            if (temaSalvo === "light") {
+                document.body.classList.add("light-theme");
+                atualizarInterfaceBotao(true);
+            }
+        });
 
-function atualizarInterfaceBotao(ehModoClaro) {
-    const icone = document.getElementById("tema-icon");
-    const texto = document.getElementById("tema-texto");
-    
-    if (icone && texto) {
-        if (ehModoClaro) {
-            icone.textContent = "dark_mode";
-            texto.textContent = "Modo Escuro";
-        } else {
-            icone.textContent = "light_mode";
-            texto.textContent = "Modo Claro";
+        function alternarTema() {
+            const body = document.body;
+            body.classList.toggle("light-theme");
+            const ehModoClaro = body.classList.contains("light-theme");
+            localStorage.setItem("tema-escolhido", ehModoClaro ? "light" : "dark");
+            atualizarInterfaceBotao(ehModoClaro);
         }
-    }
-}
+
+        function atualizarInterfaceBotao(ehModoClaro) {
+            const icone = document.getElementById("tema-icon");
+            const texto = document.getElementById("tema-texto");
+            if (icone && texto) {
+                if (ehModoClaro) {
+                    icone.textContent = "dark_mode";
+                    texto.textContent = "Modo Escuro";
+                } else {
+                    icone.textContent = "light_mode";
+                    texto.textContent = "Modo Claro";
+                }
+            }
+        }
     </script>
 </body>
+
 </html>

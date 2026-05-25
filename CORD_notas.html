@@ -5,193 +5,684 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCI - Sistema de Notas</title>
+        <link rel="icon" href="CCI_LOGO.png"
+        style="border-radius: 50%;">
 
     <link rel="stylesheet" href="style.css">
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* =====================================================
+           LAYOUT PRINCIPAL
+        ===================================================== */
+        .main-content-notas {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 28px 32px;
+            gap: 20px;
+            background: #020817;
+        }
+
+        /* =====================================================
+           HERO / HEADER
+        ===================================================== */
+        .hero-notas {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .hero-notas h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .hero-notas h1 span {
+            color: #38bdf8;
+        }
+
+        .hero-notas p {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .hero-actions-notas {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* =====================================================
+           LAYOUT DOIS PAINÉIS
+        ===================================================== */
+        .notas-layout-notas {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* ---- PAINEL ESQUERDO: lista de alunos ---- */
+        .students-panel-notas {
+            width: 260px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, .03);
+            border: 1px solid rgba(255, 255, 255, .06);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-top-notas {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .panel-top-notas h2 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .filtro-wrapper-notas {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(255, 255, 255, .07);
+            border-radius: 12px;
+            padding: 8px 12px;
+        }
+
+        .filtro-wrapper-notas select {
+            background: none;
+            border: none;
+            outline: none;
+            color: #cbd5e1;
+            font-size: 13px;
+            font-family: 'Poppins', sans-serif;
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .filtro-wrapper-notas select option {
+            background: #0f172a;
+        }
+
+        .filtro-wrapper-notas .material-icons-outlined {
+            font-size: 18px;
+            color: #64748b;
+        }
+
+        .search-box-notas {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(255, 255, 255, .07);
+            border-radius: 12px;
+            padding: 8px 12px;
+        }
+
+        .search-box-notas .material-icons-outlined {
+            font-size: 18px;
+            color: #64748b;
+        }
+
+        .search-box-notas input {
+            background: none;
+            border: none;
+            outline: none;
+            color: #e2e8f0;
+            font-size: 13px;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+        }
+
+        .search-box-notas input::placeholder {
+            color: #475569;
+        }
+
+        .student-list-notas {
+            list-style: none;
+            overflow-y: auto;
+            flex: 1;
+            padding: 8px;
+        }
+
+        .student-list-notas::-webkit-scrollbar { width: 4px; }
+        .student-list-notas::-webkit-scrollbar-track { background: transparent; }
+        .student-list-notas::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
+
+        .student-list-notas li { margin-bottom: 4px; }
+
+        .student-item-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: none;
+            border: none;
+            border-radius: 12px;
+            color: #94a3b8;
+            font-size: 13px;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            text-align: left;
+            transition: all .2s;
+        }
+
+        .student-item-btn:hover {
+            background: rgba(255, 255, 255, .05);
+            color: #e2e8f0;
+        }
+
+        .student-item-btn.active-student {
+            background: rgba(56, 189, 248, .12);
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .student-item-btn .material-icons-outlined {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .loading-student-notas {
+            text-align: center;
+            padding: 20px;
+            color: #475569;
+            font-size: 13px;
+        }
+
+        /* ---- PAINEL DIREITO: boletim ---- */
+        .boletim-panel-notas {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            gap: 16px;
+            min-width: 0;
+        }
+
+        /* ---- CABEÇALHO DO BOLETIM ---- */
+        .boletim-header-notas {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, .03);
+            border: 1px solid rgba(255, 255, 255, .06);
+            border-radius: 18px;
+            padding: 18px 24px;
+            flex-shrink: 0;
+        }
+
+        .boletim-header-notas h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .boletim-header-notas p {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .boletim-header-notas p strong {
+            color: #94a3b8;
+        }
+
+        /* Card Média Final no header */
+        .media-final-card-notas {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(56, 189, 248, .08);
+            border: 1px solid rgba(56, 189, 248, .2);
+            border-radius: 16px;
+            padding: 14px 28px;
+            min-width: 110px;
+        }
+
+        .media-final-card-notas span {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .media-final-card-notas strong {
+            font-size: 30px;
+            font-weight: 700;
+            color: #38bdf8;
+            line-height: 1.1;
+        }
+
+        /* =====================================================
+           GRADE DE PERÍODOS
+        ===================================================== */
+        .periodos-scroll-notas {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-right: 4px;
+        }
+
+        .periodos-scroll-notas::-webkit-scrollbar { width: 4px; }
+        .periodos-scroll-notas::-webkit-scrollbar-track { background: transparent; }
+        .periodos-scroll-notas::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
+
+        /* Bloco de par (Período 1 + Período 2) = 1 linha */
+        .semestre-row-notas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        /* Card individual de período */
+        .periodo-card-notas {
+            background: rgba(255, 255, 255, .03);
+            border: 1px solid rgba(255, 255, 255, .06);
+            border-radius: 18px;
+            padding: 18px 20px;
+            transition: border-color .25s;
+        }
+
+        .periodo-card-notas:hover {
+            border-color: rgba(56, 189, 248, .18);
+        }
+
+        /* Topo do card: título + badge da média */
+        .periodo-top-notas {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .periodo-top-notas h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .media-badge-notas {
+            background: rgba(56, 189, 248, .12);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, .22);
+            border-radius: 999px;
+            padding: 4px 14px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .media-badge-notas.aprovado {
+            background: rgba(34, 197, 94, .12);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, .22);
+        }
+
+        .media-badge-notas.reprovado {
+            background: rgba(239, 68, 68, .12);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, .22);
+        }
+
+        /* Linha N1 + N2 + fórmula */
+        .notas-row-notas {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .input-group-notas {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group-notas label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .input-group-notas input {
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: #e2e8f0;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            transition: border-color .2s, background .2s;
+        }
+
+        .input-group-notas input:focus {
+            outline: none;
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, .06);
+        }
+
+        .input-group-notas input:not(:disabled) {
+            border-color: rgba(56, 189, 248, .35);
+            background: rgba(56, 189, 248, .05);
+        }
+
+        /* Fórmula visual: (N1 + N2) / 2 = média */
+        .formula-label-notas {
+            font-size: 11px;
+            color: #475569;
+            white-space: nowrap;
+            padding-bottom: 12px;
+            text-align: center;
+        }
+
+        /* =====================================================
+           CARD DE CONCLUSÃO (nota final)
+        ===================================================== */
+        .conclusao-card-notas {
+            background: linear-gradient(135deg, rgba(56,189,248,.08), rgba(99,102,241,.08));
+            border: 1px solid rgba(56, 189, 248, .2);
+            border-radius: 18px;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .conclusao-left-notas {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .conclusao-left-notas span {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+        }
+
+        .conclusao-left-notas strong {
+            font-size: 15px;
+            color: #e2e8f0;
+        }
+
+        .conclusao-formula-notas {
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .conclusao-nota-notas {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .conclusao-nota-notas span {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .conclusao-nota-notas strong {
+            font-size: 36px;
+            font-weight: 700;
+            color: #38bdf8;
+            line-height: 1;
+        }
+
+        .conclusao-nota-notas strong.aprovado { color: #22c55e; }
+        .conclusao-nota-notas strong.reprovado { color: #ef4444; }
+
+        .conclusao-status-notas {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 999px;
+            margin-top: 6px;
+        }
+
+        .conclusao-status-notas.aprovado {
+            background: rgba(34, 197, 94, .12);
+            color: #22c55e;
+        }
+
+        .conclusao-status-notas.reprovado {
+            background: rgba(239, 68, 68, .12);
+            color: #ef4444;
+        }
+
+        /* =====================================================
+           PLACEHOLDER
+        ===================================================== */
+        .placeholder-aviso-notas {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 12px;
+            color: #334155;
+        }
+
+        .placeholder-aviso-notas .material-icons-outlined {
+            font-size: 52px;
+            color: #1e293b;
+        }
+
+        .placeholder-aviso-notas p {
+            font-size: 14px;
+        }
+
+        /* =====================================================
+           LIGHT THEME OVERRIDES
+        ===================================================== */
+        body.light-theme .main-content-notas { background: #f8fafc; }
+
+        body.light-theme .students-panel-notas,
+        body.light-theme .boletim-header-notas,
+        body.light-theme .periodo-card-notas,
+        body.light-theme .conclusao-card-notas {
+            background: #fff;
+            border-color: #e2e8f0;
+        }
+
+        body.light-theme .panel-top-notas { border-color: #e2e8f0; }
+        body.light-theme .filtro-wrapper-notas,
+        body.light-theme .search-box-notas {
+            background: #f1f5f9;
+            border-color: #e2e8f0;
+        }
+
+        body.light-theme .filtro-wrapper-notas select,
+        body.light-theme .search-box-notas input { color: #0f172a; }
+        body.light-theme .filtro-wrapper-notas select option { background: #fff; }
+
+        body.light-theme .panel-top-notas h2,
+        body.light-theme .boletim-header-notas h2,
+        body.light-theme .hero-notas h1,
+        body.light-theme .periodo-top-notas h3 { color: #0f172a; }
+
+        body.light-theme .student-item-btn { color: #475569; }
+        body.light-theme .student-item-btn:hover { background: #f1f5f9; color: #0f172a; }
+        body.light-theme .student-item-btn.active-student { background: rgba(56,189,248,.1); color: #0284c7; }
+
+        body.light-theme .input-group-notas input {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+            color: #0f172a;
+        }
+
+        body.light-theme .input-group-notas input:not(:disabled) {
+            border-color: #38bdf8;
+            background: rgba(56,189,248,.04);
+        }
+
+        /* =====================================================
+           BOTÕES (reutilizando do style.css mas garantindo aqui)
+        ===================================================== */
+        .btn-outline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .25s;
+            font-family: 'Poppins', sans-serif;
+            text-decoration: none;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,.15);
+            color: #e2e8f0;
+        }
+
+        .btn-outline:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.25); }
+
+        .btn-green {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .25s;
+            font-family: 'Poppins', sans-serif;
+            background: rgba(34,197,94,.15);
+            border: 1px solid rgba(34,197,94,.3);
+            color: #22c55e;
+        }
+
+        .btn-green:hover { background: rgba(34,197,94,.25); transform: translateY(-1px); }
+    </style>
 </head>
 
 <body>
 
     <aside class="sidebar">
-
         <div>
-
             <div class="logo-area">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhCEBRiOnJ4WSaugF7R9v1NsEo_3cIbNliFA&s"
-                    class="logo-img">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhCEBRiOnJ4WSaugF7R9v1NsEo_3cIbNliFA&s" class="logo-img">
             </div>
-
             <div class="menu-links">
-
                 <a href="CORD_painel.html" class="nav-link-custom">
-                    <span class="material-icons-outlined">home</span>
-                    Inicio
+                    <span class="material-icons-outlined">home</span>Inicio
                 </a>
-
                 <a href="CORD_turmas.html" class="nav-link-custom">
-                    <span class="material-icons-outlined">groups</span>
-                    Turmas
+                    <span class="material-icons-outlined">groups</span>Turmas
                 </a>
-
                 <a href="CORD_notas.html" class="nav-link-custom active">
-                    <span class="material-icons-outlined">edit_note</span>
-                    Notas
+                    <span class="material-icons-outlined">edit_note</span>Notas
                 </a>
-
                 <a href="CORD_dashboard.html" class="nav-link-custom">
-                    <span class="material-icons-outlined">leaderboard</span>
-                    Painel
+                    <span class="material-icons-outlined">leaderboard</span>Painel
                 </a>
-
             </div>
-
         </div>
-
         <button class="btn-sair" onclick="fazerLogout()">
-            <span class="material-icons-outlined">logout</span>
-            Sair
+            <span class="material-icons-outlined">logout</span>Sair
         </button>
-
     </aside>
 
     <main class="main-content-notas">
 
-        <section class="hero-notas notas-hero-notas">
-
+        <!-- HERO -->
+        <section class="hero-notas">
             <div>
-                <h1>
-                    Sistema de
-                    <span>Lançamento de Notas</span>
-                </h1>
-
-                <p>
-                    Gerencie notas, médias e desempenho acadêmico dos alunos.
-                </p>
+                <h1>Sistema de <span>Lançamento de Notas</span></h1>
+                <p>Gerencie notas, médias e desempenho acadêmico dos alunos.</p>
             </div>
-
             <div class="hero-actions-notas">
-
                 <button class="btn-outline" onclick="exportarPDF()">
-                    <span class="material-icons-outlined">picture_as_pdf</span>
-                    Exportar PDF
+                    <span class="material-icons-outlined">picture_as_pdf</span>Exportar PDF
                 </button>
-
                 <button id="btn-editar-notas" class="btn-green" onclick="toggleEdicao()">
-                    <span class="material-icons-outlined">edit</span>
-                    Editar
+                    <span class="material-icons-outlined">edit</span>Editar
                 </button>
-                
                 <button class="btn-green" onclick="document.getElementById('importarNotas').click()">
-                    <span class="material-icons-outlined">
-                        upload
-                    </span>
-                    Importar Planilha
+                    <span class="material-icons-outlined">upload</span>Importar Planilha
                 </button>
-
                 <input type="file" id="importarNotas" accept=".xlsx,.csv" hidden>
-
             </div>
-
         </section>
 
+        <!-- LAYOUT DOIS PAINÉIS -->
         <section class="notas-layout-notas">
 
+            <!-- PAINEL ESQUERDO: alunos -->
             <aside class="students-panel-notas">
-
                 <div class="panel-top-notas">
-
                     <h2>Alunos</h2>
-
                     <div class="filtro-wrapper-notas">
-
-                        <span class="material-icons-outlined">
-                            filter_alt
-                        </span>
-
+                        <span class="material-icons-outlined">filter_alt</span>
                         <select id="filtro-turma" onchange="renderizarListaFiltrada()">
-                            <option value="todos">
-                                Todas as Turmas
-                            </option>
+                            <option value="todos">Todas as Turmas</option>
                         </select>
-
                     </div>
-
                     <div class="search-box-notas">
-
-                        <span class="material-icons-outlined">
-                            search
-                        </span>
-
-                        <input type="text" id="busca-aluno" placeholder="Pesquisar aluno..."
-                            onkeyup="filtrarListaAlunos()">
-
+                        <span class="material-icons-outlined">search</span>
+                        <input type="text" id="busca-aluno" placeholder="Pesquisar aluno..." onkeyup="filtrarListaAlunos()">
                     </div>
-
                 </div>
-
                 <ul class="student-list-notas" id="student-list">
-                    <li class="loading-student-notas">
-                        Carregando alunos...
-                    </li>
+                    <li class="loading-student-notas">Carregando alunos...</li>
                 </ul>
-
             </aside>
 
+            <!-- PAINEL DIREITO: boletim -->
             <section class="boletim-panel-notas">
 
+                <!-- Cabeçalho do aluno selecionado -->
                 <div class="boletim-header-notas">
-
                     <div>
-
                         <input type="hidden" id="current-student-id">
-
-                        <h2 id="display-name">
-                            Selecione um aluno
-                        </h2>
-
-                        <p>
-                            Turma:
-                            <strong id="display-course">---</strong>
-                        </p>
-
+                        <h2 id="display-name">Selecione um aluno</h2>
+                        <p>Turma: <strong id="display-course">---</strong> &nbsp;|&nbsp; Módulo: <strong id="display-modulo">---</strong></p>
                     </div>
-
                     <div class="media-final-card-notas">
-
-                        <span>Média Final</span>
-
-                        <strong id="display-final">
-                            0.0
-                        </strong>
-
+                        <span>Nota Final</span>
+                        <strong id="display-final">0.0</strong>
                     </div>
-
                 </div>
 
-                <div id="periodos-container" class="periodos-grid-notas">
-
+                <!-- Container dos períodos (scroll) -->
+                <div class="periodos-scroll-notas" id="periodos-container">
                     <div class="placeholder-aviso-notas">
-
-                        <span class="material-icons-outlined">
-                            school
-                        </span>
-
-                        <p>
-                            Escolha um aluno para visualizar as notas.
-                        </p>
-
+                        <span class="material-icons-outlined">school</span>
+                        <p>Escolha um aluno para visualizar as notas.</p>
                     </div>
-
                 </div>
 
             </section>
@@ -201,7 +692,6 @@
     </main>
 
     <script>
-
         const firebaseConfig = {
             apiKey: "AIzaSyBvSOKw2VTeG1uMDqDn3-SWi0Hsf2z6i2w",
             authDomain: "sistema-cci-2026.firebaseapp.com",
@@ -212,526 +702,323 @@
             appId: "1:633401547904:web:0572615ffba4227a6f5a65"
         };
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
         let todosOsAlunos = {};
         let editando = false;
 
+        /* ============================================================
+           INICIALIZAÇÃO
+        ============================================================ */
         function iniciarAplicacao() {
-
             db.ref('alunos').on('value', (snapshot) => {
-
                 todosOsAlunos = snapshot.val();
-
                 atualizarSeletorTurmas();
-
                 renderizarListaFiltrada();
-
             });
-
         }
 
         function atualizarSeletorTurmas() {
-
             const select = document.getElementById('filtro-turma');
-
             const turmas = new Set();
-
             if (todosOsAlunos) {
-
-                Object.values(todosOsAlunos).forEach(aluno => {
-
-                    if (aluno.turma) {
-                        turmas.add(aluno.turma);
-                    }
-
-                });
-
+                Object.values(todosOsAlunos).forEach(a => { if (a.turma) turmas.add(a.turma); });
             }
-
-            select.innerHTML =
-                '<option value="todos">Todas as Turmas</option>';
-
+            select.innerHTML = '<option value="todos">Todas as Turmas</option>';
             Array.from(turmas).sort().forEach(turma => {
-
-                const option = document.createElement('option');
-
-                option.value = turma;
-
-                option.innerText = turma;
-
-                select.appendChild(option);
-
+                const opt = document.createElement('option');
+                opt.value = turma;
+                opt.innerText = turma;
+                select.appendChild(opt);
             });
-
         }
 
         function renderizarListaFiltrada() {
-
             const lista = document.getElementById('student-list');
-
-            const filtro =
-                document.getElementById('filtro-turma').value;
-
+            const filtro = document.getElementById('filtro-turma').value;
             lista.innerHTML = "";
-
             if (!todosOsAlunos) {
-
-                lista.innerHTML =
-                    "<li class='loading-student-notas'>Nenhum aluno encontrado.</li>";
-
+                lista.innerHTML = "<li class='loading-student-notas'>Nenhum aluno encontrado.</li>";
                 return;
-
             }
-
             Object.keys(todosOsAlunos).forEach(id => {
-
                 const aluno = todosOsAlunos[id];
-
                 if (filtro === "todos" || aluno.turma === filtro) {
-
-                    const nome =
-                        aluno.nome_completo ||
-                        aluno.nome ||
-                        "Sem Nome";
-
-                    lista.innerHTML += `
-
-                        <li>
-
-                            <button class="student-item-btn"
-                                id="btn-${id}"
-                                onclick="selecionarAluno('${id}')">
-
-                                <span class="material-icons-outlined">
-                                    person
-                                </span>
-
-                                ${nome}
-
-                            </button>
-
-                        </li>
-
-                    `;
-
+                    const nome = aluno.nome_completo || aluno.nome || "Sem Nome";
+                    const li = document.createElement('li');
+                    li.innerHTML = `<button class="student-item-btn" id="btn-${id}" onclick="selecionarAluno('${id}')">
+                        <span class="material-icons-outlined">person</span>${nome}</button>`;
+                    lista.appendChild(li);
                 }
-
             });
-
         }
 
         function selecionarAluno(id) {
-
-            document.querySelectorAll('.student-item-btn')
-                .forEach(btn => btn.classList.remove('active-student'));
-
-            document.getElementById(`btn-${id}`)
-                .classList.add('active-student');
+            document.querySelectorAll('.student-item-btn').forEach(b => b.classList.remove('active-student'));
+            document.getElementById(`btn-${id}`)?.classList.add('active-student');
 
             const aluno = todosOsAlunos[id];
-
             document.getElementById('current-student-id').value = id;
-
-            document.getElementById('display-name').innerText =
-                aluno.nome_completo || aluno.nome || "---";
-
-            document.getElementById('display-course').innerText =
-                aluno.turma || "---";
+            document.getElementById('display-name').innerText = aluno.nome_completo || aluno.nome || "---";
+            document.getElementById('display-course').innerText = aluno.turma || "---";
+            document.getElementById('display-modulo').innerText = aluno.modulo ? `${aluno.modulo}º Módulo` : "---";
 
             renderizarNotas(aluno.notas);
-
             editando = false;
-
             atualizarBotao();
+        }
 
+        /* ============================================================
+           RENDERIZAÇÃO DO BOLETIM
+        ============================================================ */
+        function calcMedia(n1, n2) {
+            // Média do período = (N1 + N2) / 2
+            return (n1 + n2) / 2;
         }
 
         function renderizarNotas(notasExistentes) {
-
-            const container =
-                document.getElementById('periodos-container');
-
+            const container = document.getElementById('periodos-container');
             container.innerHTML = "";
 
-            let soma = 0;
+            // Arrays para guardar as médias dos 4 períodos
+            const medias = [];
+
+            /* ----- Linha 1: Períodos 1 e 2 ----- */
+            const row1 = document.createElement('div');
+            row1.className = 'semestre-row-notas';
+
+            /* ----- Linha 2: Períodos 3 e 4 ----- */
+            const row2 = document.createElement('div');
+            row2.className = 'semestre-row-notas';
 
             for (let i = 1; i <= 4; i++) {
-
                 const chave = `p${i}`;
-
-                const n = (notasExistentes && notasExistentes[chave])
-                    ? notasExistentes[chave]
-                    : { n1: 0, n2: 0 };
-
+                const n = (notasExistentes && notasExistentes[chave]) ? notasExistentes[chave] : { n1: 0, n2: 0 };
                 const n1 = parseFloat(n.n1 || 0);
-
                 const n2 = parseFloat(n.n2 || 0);
+                const media = calcMedia(n1, n2);
+                medias.push(media);
 
-                const media = (n1 + n2).toFixed(1);
+                const badgeClass = media >= 6 ? 'aprovado' : (media > 0 ? 'reprovado' : '');
 
-                soma += parseFloat(media);
-
-                container.innerHTML += `
-
-                    <div class="periodo-card-notas">
-
-                        <div class="periodo-top-notas">
-
-                            <h3>${i}º Período</h3>
-
-                            <div class="media-badge-notas">
-                                ${media}
-                            </div>
-
+                const card = document.createElement('div');
+                card.className = 'periodo-card-notas';
+                card.innerHTML = `
+                    <div class="periodo-top-notas">
+                        <h3>${i}º Período</h3>
+                        <div class="media-badge-notas ${badgeClass}" id="badge-p${i}">
+                            Média: ${media.toFixed(1)}
                         </div>
-
-                        <div class="inputs-grid-notas">
-
-                            <div class="input-group-notas">
-
-                                <label>N1</label>
-
-                                <input type="number"
-                                    step="0.1"
-                                    min="0"
-                                    max="8"
-                                    class="edit-nota"
-                                    data-p="${chave}"
-                                    data-tipo="n1"
-                                    value="${n1}"
-                                    disabled>
-
-                            </div>
-
-                            <div class="input-group-notas">
-
-                                <label>N2</label>
-
-                                <input type="number"
-                                    step="0.1"
-                                    min="0"
-                                    max="2"
-                                    class="edit-nota"
-                                    data-p="${chave}"
-                                    data-tipo="n2"
-                                    value="${n2}"
-                                    disabled>
-
-                            </div>
-
-                        </div>
-
                     </div>
-
+                    <div class="notas-row-notas">
+                        <div class="input-group-notas">
+                            <label>Nota 1 (N1)</label>
+                            <input type="number" step="0.1" min="0" max="10"
+                                class="edit-nota" data-p="${chave}" data-tipo="n1"
+                                value="${n1}" disabled
+                                oninput="recalcularMedia(${i})">
+                        </div>
+                        <div class="input-group-notas">
+                            <label>Nota 2 (N2)</label>
+                            <input type="number" step="0.1" min="0" max="10"
+                                class="edit-nota" data-p="${chave}" data-tipo="n2"
+                                value="${n2}" disabled
+                                oninput="recalcularMedia(${i})">
+                        </div>
+                        <div class="formula-label-notas">
+                            (N1 + N2) ÷ 2
+                        </div>
+                    </div>
                 `;
 
+                if (i <= 2) row1.appendChild(card);
+                else row2.appendChild(card);
             }
 
-            document.getElementById('display-final')
-                .innerText = (soma / 4).toFixed(1);
+            container.appendChild(row1);
+            container.appendChild(row2);
 
+            // Nota final = (M1 + M2 + M3 + M4) / 4
+            const notaFinal = medias.reduce((a, b) => a + b, 0) / 4;
+            atualizarNotaFinal(notaFinal, medias);
         }
 
+        function recalcularMedia(periodo) {
+            const chave = `p${periodo}`;
+            const inputsP = document.querySelectorAll(`.edit-nota[data-p="${chave}"]`);
+            let n1 = 0, n2 = 0;
+            inputsP.forEach(inp => {
+                if (inp.dataset.tipo === 'n1') n1 = parseFloat(inp.value) || 0;
+                if (inp.dataset.tipo === 'n2') n2 = parseFloat(inp.value) || 0;
+            });
+            const media = calcMedia(n1, n2);
+            const badge = document.getElementById(`badge-p${periodo}`);
+            if (badge) {
+                badge.textContent = `Média: ${media.toFixed(1)}`;
+                badge.className = 'media-badge-notas ' + (media >= 6 ? 'aprovado' : 'reprovado');
+            }
+            // Recalcula nota final
+            recalcularNotaFinal();
+        }
+
+        function recalcularNotaFinal() {
+            const medias = [];
+            for (let i = 1; i <= 4; i++) {
+                const chave = `p${i}`;
+                const inputs = document.querySelectorAll(`.edit-nota[data-p="${chave}"]`);
+                let n1 = 0, n2 = 0;
+                inputs.forEach(inp => {
+                    if (inp.dataset.tipo === 'n1') n1 = parseFloat(inp.value) || 0;
+                    if (inp.dataset.tipo === 'n2') n2 = parseFloat(inp.value) || 0;
+                });
+                medias.push(calcMedia(n1, n2));
+            }
+            const notaFinal = medias.reduce((a, b) => a + b, 0) / 4;
+            atualizarNotaFinal(notaFinal, medias);
+        }
+
+        function atualizarNotaFinal(notaFinal, medias) {
+            // Remove cards de conclusão antigos
+            const container = document.getElementById('periodos-container');
+            const antigoConclusao = document.getElementById('conclusao-card');
+            if (antigoConclusao) antigoConclusao.remove();
+
+            const aprovado = notaFinal >= 6;
+            const statusClass = notaFinal > 0 ? (aprovado ? 'aprovado' : 'reprovado') : '';
+            const statusText = notaFinal > 0 ? (aprovado ? 'Aprovado' : 'Reprovado') : '---';
+
+            const formulaTexto = medias
+                .map((m, i) => `M${i + 1}(${m.toFixed(1)})`)
+                .join(' + ') + ` ÷ 4`;
+
+            const conclusaoDiv = document.createElement('div');
+            conclusaoDiv.id = 'conclusao-card';
+            conclusaoDiv.className = 'conclusao-card-notas';
+            conclusaoDiv.innerHTML = `
+                <div class="conclusao-left-notas">
+                    <span>Conclusão do Semestre</span>
+                    <strong>Nota Final = (M1 + M2 + M3 + M4) ÷ 4</strong>
+                    <div class="conclusao-formula-notas">${formulaTexto}</div>
+                </div>
+                <div class="conclusao-nota-notas">
+                    <span>Nota Final</span>
+                    <strong class="${statusClass}" id="display-final">${notaFinal.toFixed(1)}</strong>
+                    <span class="conclusao-status-notas ${statusClass}">${statusText}</span>
+                </div>
+            `;
+            container.appendChild(conclusaoDiv);
+
+            // Atualiza também o card do header
+            const headerFinal = document.getElementById('display-final');
+            if (headerFinal) headerFinal.innerText = notaFinal.toFixed(1);
+        }
+
+        /* ============================================================
+           EDIÇÃO E SALVAMENTO
+        ============================================================ */
         function toggleEdicao() {
-
-            const id =
-                document.getElementById('current-student-id').value;
-
+            const id = document.getElementById('current-student-id').value;
             if (!id) {
-
-                Swal.fire(
-                    'Aviso',
-                    'Selecione um aluno primeiro.',
-                    'warning'
-                );
-
+                Swal.fire('Aviso', 'Selecione um aluno primeiro.', 'warning');
                 return;
-
             }
-
             if (editando) {
-
                 const novasNotas = {};
-
-                document.querySelectorAll('.edit-nota')
-                    .forEach(input => {
-
-                        const p = input.dataset.p;
-
-                        const tipo = input.dataset.tipo;
-
-                        if (!novasNotas[p]) {
-                            novasNotas[p] = {};
-                        }
-
-                        novasNotas[p][tipo] =
-                            parseFloat(input.value) || 0;
-
-                    });
-
-                db.ref(`alunos/${id}/notas`)
-                    .update(novasNotas)
-                    .then(() => {
-
-                        Swal.fire(
-                            'Sucesso!',
-                            'Notas atualizadas.',
-                            'success'
-                        );
-
-                    });
-
+                document.querySelectorAll('.edit-nota').forEach(input => {
+                    const p = input.dataset.p;
+                    const tipo = input.dataset.tipo;
+                    if (!novasNotas[p]) novasNotas[p] = {};
+                    novasNotas[p][tipo] = parseFloat(input.value) || 0;
+                });
+                db.ref(`alunos/${id}/notas`).update(novasNotas).then(() => {
+                    Swal.fire({ icon: 'success', title: 'Notas salvas!', background: '#0f172a', color: '#fff', timer: 2000, showConfirmButton: false });
+                });
             }
-
             editando = !editando;
-
-            document.querySelectorAll('.edit-nota')
-                .forEach(i => i.disabled = !editando);
-
+            document.querySelectorAll('.edit-nota').forEach(i => i.disabled = !editando);
             atualizarBotao();
-
         }
 
         function atualizarBotao() {
-
-            const btn =
-                document.getElementById('btn-editar-notas');
-
+            const btn = document.getElementById('btn-editar-notas');
             btn.innerHTML = editando
                 ? `<span class="material-icons-outlined">save</span>Salvar`
                 : `<span class="material-icons-outlined">edit</span>Editar`;
-
         }
 
         function filtrarListaAlunos() {
-
-            const busca =
-                document.getElementById('busca-aluno')
-                    .value.toLowerCase();
-
-            document.querySelectorAll('.student-item-btn')
-                .forEach(btn => {
-
-                    const nome =
-                        btn.innerText.toLowerCase();
-
-                    btn.parentElement.style.display =
-                        nome.includes(busca)
-                            ? ""
-                            : "none";
-
-                });
-
+            const busca = document.getElementById('busca-aluno').value.toLowerCase();
+            document.querySelectorAll('.student-item-btn').forEach(btn => {
+                btn.parentElement.style.display = btn.innerText.toLowerCase().includes(busca) ? "" : "none";
+            });
         }
 
         function exportarPDF() {
-
-            const nome =
-                document.getElementById('display-name').innerText;
-
+            const nome = document.getElementById('display-name').innerText;
             if (nome === "Selecione um aluno") {
-
-                Swal.fire(
-                    'Aviso',
-                    'Selecione um aluno primeiro.',
-                    'warning'
-                );
-
+                Swal.fire('Aviso', 'Selecione um aluno primeiro.', 'warning');
                 return;
             }
-
-            const tituloOriginal = document.title;
-
             document.title = `Boletim_${nome}`;
-
             window.print();
-
-            setTimeout(() => {
-                document.title = tituloOriginal;
-            }, 1000);
-
+            setTimeout(() => { document.title = "CCI - Sistema de Notas"; }, 1000);
         }
 
         function fazerLogout() {
-
             Swal.fire({
-                title: 'Deseja sair?',
-                icon: 'question',
-                background: '#0f172a',
-                color: '#fff',
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#334155',
-                showCancelButton: true,
-                confirmButtonText: 'Sair'
-            }).then((result) => {
+                title: 'Deseja sair?', icon: 'question',
+                background: '#0f172a', color: '#fff',
+                confirmButtonColor: '#ef4444', cancelButtonColor: '#334155',
+                showCancelButton: true, confirmButtonText: 'Sair'
+            }).then(r => { if (r.isConfirmed) { localStorage.clear(); window.location.href = "telalogin.html"; } });
+        }
 
-                if (result.isConfirmed) {
+        /* ============================================================
+           IMPORTAR PLANILHA
+        ============================================================ */
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('importarNotas').addEventListener('change', importarPlanilha);
+            // Aplicar tema salvo
+            const tema = localStorage.getItem("tema-escolhido");
+            if (tema === "light") document.body.classList.add("light-theme");
+        });
 
-                    localStorage.clear();
-
-                    window.location.href = "telalogin.html";
-
+        async function importarPlanilha(event) {
+            const arquivo = event.target.files[0];
+            if (!arquivo) return;
+            const reader = new FileReader();
+            reader.onload = async function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const linhas = XLSX.utils.sheet_to_json(sheet);
+                if (!linhas.length) { Swal.fire('Erro', 'Planilha vazia.', 'error'); return; }
+                let atualizados = 0;
+                const snapshot = await db.ref('alunos').once('value');
+                const alunos = snapshot.val();
+                for (const linha of linhas) {
+                    const nomePlanilha = String(linha.nome || "").trim().toLowerCase();
+                    const found = Object.keys(alunos).find(id => {
+                        return String(alunos[id].nome_completo || alunos[id].nome || "").trim().toLowerCase() === nomePlanilha;
+                    });
+                    if (found) {
+                        await db.ref(`alunos/${found}/notas`).set({
+                            p1: { n1: parseFloat(linha.p1n1 || 0), n2: parseFloat(linha.p1n2 || 0) },
+                            p2: { n1: parseFloat(linha.p2n1 || 0), n2: parseFloat(linha.p2n2 || 0) },
+                            p3: { n1: parseFloat(linha.p3n1 || 0), n2: parseFloat(linha.p3n2 || 0) },
+                            p4: { n1: parseFloat(linha.p4n1 || 0), n2: parseFloat(linha.p4n2 || 0) }
+                        });
+                        atualizados++;
+                    }
                 }
-
-            });
-
+                Swal.fire('Sucesso!', `${atualizados} alunos atualizados.`, 'success');
+            };
+            reader.readAsArrayBuffer(arquivo);
         }
 
         iniciarAplicacao();
-        document
-            .getElementById('importarNotas')
-            .addEventListener('change', importarPlanilha);
-
-        async function importarPlanilha(event) {
-
-            const arquivo = event.target.files[0];
-
-            if (!arquivo) return;
-
-            const reader = new FileReader();
-
-            reader.onload = async function (e) {
-
-                const data = new Uint8Array(e.target.result);
-
-                const workbook = XLSX.read(data, { type: 'array' });
-
-                const sheet =
-                    workbook.Sheets[workbook.SheetNames[0]];
-
-                const linhas =
-                    XLSX.utils.sheet_to_json(sheet);
-
-                if (!linhas.length) {
-
-                    Swal.fire(
-                        'Erro',
-                        'Planilha vazia.',
-                        'error'
-                    );
-
-                    return;
-                }
-
-                let atualizados = 0;
-
-                const snapshot =
-                    await db.ref('alunos').once('value');
-
-                const alunos = snapshot.val();
-
-                for (const linha of linhas) {
-
-                    const nomePlanilha =
-                        String(linha.nome || "")
-                            .trim()
-                            .toLowerCase();
-
-                    const alunoEncontrado = Object.keys(alunos)
-                        .find(id => {
-
-                            const nomeSistema =
-                                String(
-                                    alunos[id].nome_completo ||
-                                    alunos[id].nome ||
-                                    ""
-                                )
-                                    .trim()
-                                    .toLowerCase();
-
-                            return nomeSistema === nomePlanilha;
-
-                        });
-
-                    if (alunoEncontrado) {
-
-                        const notas = {
-
-                            p1: {
-                                n1: parseFloat(linha.p1n1 || 0),
-                                n2: parseFloat(linha.p1n2 || 0)
-                            },
-
-                            p2: {
-                                n1: parseFloat(linha.p2n1 || 0),
-                                n2: parseFloat(linha.p2n2 || 0)
-                            },
-
-                            p3: {
-                                n1: parseFloat(linha.p3n1 || 0),
-                                n2: parseFloat(linha.p3n2 || 0)
-                            },
-
-                            p4: {
-                                n1: parseFloat(linha.p4n1 || 0),
-                                n2: parseFloat(linha.p4n2 || 0)
-                            }
-
-                        };
-
-                        await db
-                            .ref(`alunos/${alunoEncontrado}/notas`)
-                            .set(notas);
-
-                        atualizados++;
-                    }
-
-                }
-
-                Swal.fire(
-                    'Sucesso!',
-                    `${atualizados} alunos atualizados.`,
-                    'success'
-                );
-
-            };
-
-            reader.readAsArrayBuffer(arquivo);
-
-        }
-        // Executa assim que a página carrega para verificar a escolha anterior do usuário
-document.addEventListener("DOMContentLoaded", function() {
-    const temaSalvo = localStorage.getItem("tema-escolhido");
-    
-    if (temaSalvo === "light") {
-        document.body.classList.add("light-theme");
-        atualizarInterfaceBotao(true);
-    }
-});
-
-function alternarTema() {
-    const body = document.body;
-    body.classList.toggle("light-theme");
-    
-    const ehModoClaro = body.classList.contains("light-theme");
-    
-    // Salva o estado atual no navegador
-    localStorage.setItem("tema-escolhido", ehModoClaro ? "light" : "dark");
-    
-    atualizarInterfaceBotao(ehModoClaro);
-}
-
-function atualizarInterfaceBotao(ehModoClaro) {
-    const icone = document.getElementById("tema-icon");
-    const texto = document.getElementById("tema-texto");
-    
-    if (icone && texto) {
-        if (ehModoClaro) {
-            icone.textContent = "dark_mode";
-            texto.textContent = "Modo Escuro";
-        } else {
-            icone.textContent = "light_mode";
-            texto.textContent = "Modo Claro";
-        }
-    }
-}
     </script>
 
 </body>
-
 </html>

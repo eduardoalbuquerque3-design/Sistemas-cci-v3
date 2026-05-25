@@ -40,7 +40,10 @@ function abrirTurma(evento, idSala) {
 }
 
 /* =========================================
-   CARREGAR ALUNOS (Leitura do Realtime Database)
+   CARREGAR ALUNOS (Leitura do Realtime Database com Filtro de Professor)
+========================================= */
+/* =========================================
+   CARREGAR ALUNOS (Com filtros de Professor, Disciplina e Horário)
 ========================================= */
 async function carregarAlunos() {
     const aba = document.querySelector('.tab.active');
@@ -54,7 +57,18 @@ async function carregarAlunos() {
     if (sala === "Sala 3") sala = "Sala 03";
     if (sala === "Sala 4") sala = "Sala 04";
 
-    console.log("Buscando alunos da:", sala);
+    // Captura os valores selecionados nos filtros
+    const filtroProfEl = document.getElementById('filtroProfessor');
+    const professorSelecionado = filtroProfEl ? filtroProfEl.value : 'todos';
+
+    const filtroDisciplinaEl = document.getElementById('filtroDisciplina');
+    const disciplinaSelecionada = filtroDisciplinaEl ? filtroDisciplinaEl.value : 'todos';
+
+    // Captura o select de horário (adicionamos o ID 'filtroHorario' no HTML para facilitar)
+    const filtroHorarioEl = document.getElementById('filtroHorario') || document.querySelector('.horario-select');
+    const horarioSelecionado = filtroHorarioEl ? filtroHorarioEl.value : 'todos';
+
+    console.log(`Buscando alunos da: ${sala} | Professor: ${professorSelecionado} | Disciplina: ${disciplinaSelecionada} | Horário: ${horarioSelecionado}`);
 
     const tbody = document.querySelector('.tabela-turma-turmas.ativa-turmas tbody');
     if (!tbody) return;
@@ -69,7 +83,6 @@ async function carregarAlunos() {
 
     try {
         const alunosRef = ref(database, 'alunos');
-        // Construção da consulta filtrada usando as funções modulares query(), orderByChild() e equalTo()
         const consultaAlunos = query(alunosRef, orderByChild('turma'), equalTo(sala));
         const snapshot = await get(consultaAlunos);
 
@@ -87,15 +100,49 @@ async function carregarAlunos() {
             return;
         }
 
+        let alunosContados = 0;
+
         snapshot.forEach(child => {
             const aluno = child.val();
             const id = child.key;
 
+            // 1. Filtro por Professor
+            const profAluno = aluno.professor ? aluno.professor.trim() : '';
+            if (professorSelecionado !== 'todos') {
+                if (profAluno.toLowerCase() !== professorSelecionado.toLowerCase()) return;
+            }
+
+            // 2. Filtro por Disciplina
+            const discAluno = aluno.disciplina ? aluno.disciplina.trim() : '';
+            if (disciplinaSelecionada !== 'todos') {
+                if (discAluno.toLowerCase() !== disciplinaSelecionada.toLowerCase()) return;
+            }
+
+            // 3. Filtro por Horário
+            const horAluno = aluno.horario ? aluno.horario.trim() : '';
+            if (horarioSelecionado !== 'todos') {
+                // Se selecionado valor "1" (18:30 - 19:45)
+                if (horarioSelecionado === "1" && !horAluno.includes("18:30")) return;
+                // Se selecionado valor "2" (20:00 - 21:15)
+                if (horarioSelecionado === "2" && !horAluno.includes("20:00")) return;
+            }
+
             cacheAlunos[id] = aluno;
             criarLinhaAluno(id, aluno, tbody);
+            alunosContados++;
         });
 
-        // Caso exista um termo digitado previamente no campo de busca, reaplica o filtro
+        if (alunosContados === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="2" style="text-align:center; color: #94a3b8;">
+                        Nenhum aluno atende aos filtros selecionados nesta sala.
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Se houver pesquisa por texto ativa, reaplica
         const inputBusca = document.getElementById('inputBusca');
         if (inputBusca && inputBusca.value) {
             filtrarTabela();
@@ -140,7 +187,6 @@ function criarLinhaAluno(id, aluno, tbody) {
         </td>
     `;
 
-    // Delegação de eventos segura atrelada aos elementos gerados
     tr.querySelector('.nome-clicavel-turmas').addEventListener('click', () => abrirModal(id));
     tr.querySelectorAll('.botoes-falta-turmas button').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -171,38 +217,27 @@ async function atualizarFalta(id, tipo) {
 
         const jaExiste = cacheAlunos[id].registro_faltas[hoje];
 
-        // REMOVER FALTA (-)
         if (tipo === 'R') {
-            if (jaExiste === 'F') {
-                novoValor--;
-            }
+            if (jaExiste === 'F') novoValor--;
             await remove(refRegistro);
             delete cacheAlunos[id].registro_faltas[hoje];
         }
-        // ADICIONAR FALTA (+)
         else if (tipo === 'F') {
-            if (jaExiste !== 'F') {
-                novoValor++;
-            }
+            if (jaExiste !== 'F') novoValor++;
             await set(refRegistro, 'F');
             cacheAlunos[id].registro_faltas[hoje] = 'F';
         }
-        // JUSTIFICADA (J)
         else if (tipo === 'J') {
-            if (jaExiste === 'F') {
-                novoValor--;
-            }
+            if (jaExiste === 'F') novoValor--;
             await set(refRegistro, 'J');
             cacheAlunos[id].registro_faltas[hoje] = 'J';
         }
 
         if (novoValor < 0) novoValor = 0;
 
-        // Persiste as alterações no banco usando os métodos modulares set()
         await set(refContador, novoValor);
         cacheAlunos[id].faltas_porSemestre = novoValor;
 
-        // Atualiza a visualização em tempo real
         carregarAlunos();
 
         if (alunoAtualId === id) {
@@ -304,12 +339,10 @@ function renderizarCalendario(faltas) {
     const primeiroDia = new Date(ano, mesSelecionado, 1).getDay();
     const ultimoDia = new Date(ano, mesSelecionado + 1, 0).getDate();
 
-    // Preenche os espaçamentos vazios do início do mês
     for (let i = 0; i < primeiroDia; i++) {
         calendario.innerHTML += `<div></div>`;
     }
 
-    // Renderiza cada um dos dias
     for (let dia = 1; dia <= ultimoDia; dia++) {
         const data = `${ano}-${String(mesSelecionado + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
         const div = document.createElement('div');
@@ -410,7 +443,7 @@ async function salvarEdicao() {
 
         Swal.fire({
             icon: 'success',
-            title: 'Informações atualizadas!',
+            title: 'Informações updated!',
             text: 'Os dados do aluno foram salvos com sucesso.',
             timer: 1800,
             showConfirmButton: false,
@@ -436,7 +469,7 @@ function filtrarTabela() {
     const valor = document.getElementById('inputBusca').value.toLowerCase();
 
     document.querySelectorAll('.tabela-turma-turmas.ativa-turmas tbody tr').forEach(tr => {
-        if (tr.cells.length > 1) { // Garante que não aplicará o filtro na mensagem de "Nenhum aluno"
+        if (tr.cells.length > 1) { 
             tr.style.display = tr.innerText.toLowerCase().includes(valor) ? '' : 'none';
         }
     });
@@ -454,7 +487,7 @@ function exportarPDF() {
     setTimeout(() => {
         window.print();
         document.body.classList.remove('modo-print');
-        if (modal) modal.style.display = 'flex'; // Reabre o modal após o cancelamento/impressão
+        if (modal) modal.style.display = 'flex';
     }, 300);
 }
 
@@ -463,10 +496,9 @@ function exportarPDF() {
 ========================================= */
 function fazerLogout() {
     localStorage.clear();
-    window.location.href = "index.html"; // Redireciona para sua tela raiz (antigo login.html)
+    window.location.href = "index.html";
 }
 
-// Vincula as funções necessárias ao objeto window para manter compatibilidade com chamadas inline dos botões no HTML
 window.abrirTurma = abrirTurma;
 window.atualizarFalta = atualizarFalta;
 window.abrirModal = abrirModal;
@@ -477,8 +509,8 @@ window.salvarEdicao = salvarEdicao;
 window.filtrarTabela = filtrarTabela;
 window.exportarPDF = exportarPDF;
 window.fazerLogout = fazerLogout;
+window.carregarAlunos = carregarAlunos; // Vinculada ao window para responder ao onchange do HTML
 
-// Inicialização de Escuta ao carregar
 window.addEventListener('DOMContentLoaded', () => {
     carregarAlunos();
 
@@ -500,7 +532,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const btnSalvar = document.getElementById('btn-salvar');
     if (btnSalvar) btnSalvar.addEventListener('click', salvarEdicao);
 
-    // Fechamento externo do modal
     window.addEventListener('click', (e) => {
         if (e.target.id === 'modalAluno') {
             fecharModal();

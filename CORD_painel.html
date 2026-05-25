@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCI - Home</title>
+        <link rel="icon" href="CCI_LOGO.png"
+        style="border-radius: 50%;">
 
     <link rel="stylesheet" href="style.css">
 
@@ -19,20 +21,20 @@
 </head>
 
 <body>
-
+    
     <!-- SIDEBAR -->
-
+    
     <aside class="sidebar">
 
         <div>
-
+            
             <div class="logo-area">
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhCEBRiOnJ4WSaugF7R9v1NsEo_3cIbNliFA&s"
-                    class="logo-img">
+                class="logo-img">
             </div>
-
+            
             <div class="menu-links">
-
+                
                 <a href="CORD_painel.html" class="nav-link-custom active">
                     <span class="material-icons-outlined">home</span>
                     Inicio
@@ -47,43 +49,47 @@
                     <span class="material-icons-outlined">edit_note</span>
                     Notas
                 </a>
-
+                
                 <a href="CORD_dashboard.html" class="nav-link-custom">
                     <span class="material-icons-outlined">leaderboard</span>
                     Painel
                 </a>
-
+                
             </div>
-
         </div>
-
+        
         <button class="btn-sair" onclick="fazerLogout()">
             <span class="material-icons-outlined">logout</span>
             Sair
         </button>
-
+        
     </aside>
-
+    
     <!-- MAIN -->
-
+    
     <main class="main-content-painel">
         <section class="hero-painel">
-
+            
             <div>
-
+                
                 <h1 class="titulo-painel">
                     Bem-vindo,
                     <span id="nome-usuario-painel"></span>
                 </h1>
-
+                
                 <p class="descricao-painel">
                     Gerencie turmas, notas e informações do SICCI.
                 </p>
-
+                
             </div>
-
+            <button class="btn-tema" id="btn-tema" onclick="alternarTema()">
+                <span class="material-icons-outlined" id="tema-icon">light_mode</span>
+                <span id="tema-texto">Modo Claro</span>
+            </button>
+            
+            
             <div class="hero-actions-painel">
-
+                
                 <button onclick="executarViradaDeSemestre()" class="btn-warning-custom">
                     <span class="material-icons-outlined"></span>
                     Encerrar Semestre Letivo
@@ -93,27 +99,22 @@
                     <span class="material-icons-outlined">person_add</span>
                     Cadastrar Professor
                 </a>
-
+                
                 <a href="CORD_cadastroaluno.html" class="btn-outline">
                     <span class="material-icons-outlined">school</span>
                     Cadastrar Aluno
                 </a>
-
+                
             </div>
 
         </section>
 
         <!-- CARDS -->
-<button class="btn-tema" id="btn-tema" onclick="alternarTema()">
-    <span class="material-icons-outlined" id="tema-icon">light_mode</span>
-    <span id="tema-texto">Modo Claro</span>
-</button>
         <section class="cards-grid-painel">
 
             <!-- TURMAS -->
 
-            <div class="card-cci-painel"
-                onclick="window.location.href='CORD_turmas.html'">
+            <div class="card-cci-painel" onclick="window.location.href='CORD_turmas.html'">
 
                 <div class="card-icon-painel green-painel">
                     <span class="material-icons-outlined">groups</span>
@@ -133,8 +134,7 @@
 
             <!-- NOTAS -->
 
-            <div class="card-cci-painel"
-                onclick="window.location.href='CORD_notas.html'">
+            <div class="card-cci-painel" onclick="window.location.href='CORD_notas.html'">
 
                 <div class="card-icon-painel blue-painel">
                     <span class="material-icons-outlined">edit_note</span>
@@ -154,8 +154,7 @@
 
             <!-- PAINEL -->
 
-            <div class="card-cci-painel"
-                onclick="window.location.href='CORD_dashboard.html'">
+            <div class="card-cci-painel" onclick="window.location.href='CORD_dashboard.html'">
 
                 <div class="card-icon-painel cyan-painel">
                     <span class="material-icons-outlined">leaderboard</span>
@@ -178,32 +177,68 @@
     </main>
 
     <script>
-// Executa assim que a página carrega para verificar a escolha anterior do usuário
-document.addEventListener("DOMContentLoaded", function() {
-    const temaSalvo = localStorage.getItem("tema-escolhido");
+
+        // Executa assim que a página carrega para verificar a escolha anterior do usuário
+       document.addEventListener("DOMContentLoaded", function () {
+    // ==========================================================================
+    // 1. VALIDAÇÃO E EXIBIÇÃO DO USUÁRIO
+    // ==========================================================================
+    const nomeSalvo = localStorage.getItem('usuarioNome');
+    const elementoNome = document.getElementById('nome-usuario-painel');
+
+    if (nomeSalvo) {
+        // Só tenta injetar o nome se o elemento existir nesta tela (ex: Painel Principal)
+        if (elementoNome) {
+            elementoNome.textContent = nomeSalvo;
+        }
+    } else {
+        // Se não houver usuário logado, redireciona imediatamente
+        window.location.href = "telalogin.html";
+        return; // Interrompe a execução do resto do script
+    }
+
+    // ==========================================================================
+    // 2. VERIFICAÇÃO E APLICAÇÃO DO TEMA SALVO
+    // ==========================================================================
+    const temaSalvo = localStorage.getItem("tema-escolhido") || "dark";
     
     if (temaSalvo === "light") {
         document.body.classList.add("light-theme");
         atualizarInterfaceBotao(true);
+    } else {
+        document.body.classList.remove("light-theme");
+        atualizarInterfaceBotao(false);
+    }
+
+    // ==========================================================================
+    // 3. ATIVAÇÃO DO BOTÃO DE ALTERNAR TEMA
+    // ==========================================================================
+    const btnTema = document.getElementById("btn-tema");
+    if (btnTema) {
+        btnTema.onclick = alternarTema; // Vincula a função ao clique de forma segura
     }
 });
+
+// ==========================================================================
+// FUNÇÕES GLOBAIS DE SUPORTE
+// ==========================================================================
 
 function alternarTema() {
     const body = document.body;
     body.classList.toggle("light-theme");
-    
+
     const ehModoClaro = body.classList.contains("light-theme");
-    
-    // Salva o estado atual no navegador
+
+    // Salva o estado atual no armazenamento local
     localStorage.setItem("tema-escolhido", ehModoClaro ? "light" : "dark");
-    
+
     atualizarInterfaceBotao(ehModoClaro);
 }
 
 function atualizarInterfaceBotao(ehModoClaro) {
     const icone = document.getElementById("tema-icon");
     const texto = document.getElementById("tema-texto");
-    
+
     if (icone && texto) {
         if (ehModoClaro) {
             icone.textContent = "dark_mode";
@@ -214,18 +249,24 @@ function atualizarInterfaceBotao(ehModoClaro) {
         }
     }
 }
-        document.addEventListener('DOMContentLoaded', () => {
 
-            const nomeSalvo = localStorage.getItem('usuarioNome');
-
-            if (nomeSalvo) {
-                document.getElementById('nome-usuario-painel').textContent = nomeSalvo;
-            } else {
-                window.location.href = "telalogin.html";
-            }
-
-        });
-
+function fazerLogout() {
+    Swal.fire({
+        title: 'Deseja sair?',
+        icon: 'question',
+        background: '#0f172a',
+        color: '#fff',
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#334155',
+        showCancelButton: true,
+        confirmButtonText: 'Sair'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            localStorage.clear();
+            window.location.href = "telalogin.html";
+        }
+    });
+}
         function fazerLogout() {
 
             Swal.fire({

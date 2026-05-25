@@ -4,173 +4,778 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Escolar - Sistema de Gestão</title>
+    <title>Dashboard Acadêmico - CCI</title>
+        <link rel="icon" href="CCI_LOGO.png"
+        style="border-radius: 50%;">
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <!-- ⚠️  Carregar o Firebase UMA SÓ VEZ (versão 9 compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <!-- Chart.js e SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Fontes -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="continuidade.js"></script>
 
+    <!-- CSS global do projeto -->
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        .dash-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #020817;
+        }
+
+        .dash-header {
+            padding: 24px 32px 0;
+            flex-shrink: 0;
+        }
+
+        .dash-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .dash-header p {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .dash-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 32px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .dash-body::-webkit-scrollbar { width: 5px; }
+        .dash-body::-webkit-scrollbar-track { background: transparent; }
+        .dash-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 5px; }
+
+        /* KPIs */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .kpi-card {
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.06);
+            border-radius: 18px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: border-color .25s;
+        }
+
+        .kpi-card:hover { border-color: rgba(255,255,255,.12); }
+
+        .kpi-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .kpi-icon.blue  { background: rgba(56,189,248,.12); color: #38bdf8; }
+        .kpi-icon.green { background: rgba(34,197,94,.12);  color: #22c55e; }
+        .kpi-icon.amber { background: rgba(245,158,11,.12); color: #f59e0b; }
+        .kpi-icon.red   { background: rgba(239,68,68,.12);  color: #ef4444; }
+        .kpi-icon .material-icons-outlined { font-size: 22px; }
+
+        .kpi-info .label {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+        }
+
+        .kpi-info .value {
+            font-size: 26px;
+            font-weight: 700;
+            color: #f1f5f9;
+            line-height: 1.1;
+        }
+
+        /* Filtros */
+        .filter-bar {
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.06);
+            border-radius: 18px;
+            padding: 16px 20px;
+        }
+
+        .filter-bar-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-bar-title .material-icons-outlined { font-size: 16px; }
+
+        .filter-rows { display: flex; flex-direction: column; gap: 10px; }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-row-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+            min-width: 72px;
+            flex-shrink: 0;
+        }
+
+        .btn-filter {
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+            border: 1px solid rgba(255,255,255,.08);
+            background: rgba(255,255,255,.04);
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .btn-filter:hover { background: rgba(255,255,255,.09); color: #e2e8f0; }
+
+        .btn-filter.active {
+            background: rgba(56,189,248,.15);
+            border-color: rgba(56,189,248,.35);
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        /* Gráficos */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        .chart-card {
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.06);
+            border-radius: 18px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-card h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+        }
+
+        .chart-container {
+            flex: 1;
+            position: relative;
+            min-height: 200px;
+        }
+
+        /* Tabela */
+        .table-card {
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.06);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .table-card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .table-card-header h3 { font-size: 14px; font-weight: 600; color: #e2e8f0; }
+        .table-card-header span { font-size: 12px; color: #64748b; }
+
+        .table-scroll {
+            overflow-x: auto;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .table-scroll::-webkit-scrollbar { height: 4px; width: 4px; }
+        .table-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
+
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+        .data-table thead th {
+            padding: 10px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            color: #475569;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+            background: rgba(255,255,255,.02);
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table tbody tr {
+            border-bottom: 1px solid rgba(255,255,255,.04);
+            transition: background .15s;
+        }
+
+        .data-table tbody tr:hover { background: rgba(255,255,255,.03); }
+        .data-table tbody tr:last-child { border-bottom: none; }
+
+        .data-table td { padding: 10px 16px; color: #94a3b8; vertical-align: middle; }
+        .data-table td:first-child { color: #e2e8f0; font-weight: 500; }
+
+        .badge-nota {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .badge-nota.verde   { background: rgba(34,197,94,.12); color: #22c55e; }
+        .badge-nota.vermelho { background: rgba(239,68,68,.12); color: #ef4444; }
+        .badge-nota.amarelo  { background: rgba(245,158,11,.12); color: #f59e0b; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 32px 20px;
+            color: #334155;
+            font-size: 13px;
+        }
+
+        /* Light theme */
+        body.light-theme .dash-wrapper   { background: #f8fafc; }
+        body.light-theme .kpi-card,
+        body.light-theme .filter-bar,
+        body.light-theme .chart-card,
+        body.light-theme .table-card     { background: #fff; border-color: #e2e8f0; }
+        body.light-theme .dash-header h1 { color: #0f172a; }
+        body.light-theme .kpi-info .value { color: #0f172a; }
+        body.light-theme .data-table td:first-child { color: #0f172a; }
+        body.light-theme .chart-card h3,
+        body.light-theme .table-card-header h3 { color: #0f172a; }
+        body.light-theme .btn-filter { color: #475569; border-color: #e2e8f0; background: #f1f5f9; }
+        body.light-theme .btn-filter:hover { background: #e2e8f0; color: #0f172a; }
+    </style>
 </head>
 
 <body>
 
     <aside class="sidebar">
-
         <div>
-
             <div class="logo-area">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhCEBRiOnJ4WSaugF7R9v1NsEo_3cIbNliFA&s"
-                    class="logo-img">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhCEBRiOnJ4WSaugF7R9v1NsEo_3cIbNliFA&s" class="logo-img">
             </div>
-
             <div class="menu-links">
-
-                <a href="CORD_painel.html" class="nav-link-custom ">
-                    <span class="material-icons-outlined">home</span>
-                    Inicio
+                <a href="CORD_painel.html" class="nav-link-custom">
+                    <span class="material-icons-outlined">home</span>Inicio
                 </a>
-
                 <a href="CORD_turmas.html" class="nav-link-custom">
-                    <span class="material-icons-outlined">groups</span>
-                    Turmas
+                    <span class="material-icons-outlined">groups</span>Turmas
                 </a>
-
                 <a href="CORD_notas.html" class="nav-link-custom">
-                    <span class="material-icons-outlined">edit_note</span>
-                    Notas
+                    <span class="material-icons-outlined">edit_note</span>Notas
                 </a>
-
                 <a href="CORD_dashboard.html" class="nav-link-custom active">
-                    <span class="material-icons-outlined">leaderboard</span>
-                    Painel
+                    <span class="material-icons-outlined">leaderboard</span>Painel
                 </a>
-
             </div>
-
         </div>
-
         <button class="btn-sair" onclick="fazerLogout()">
-            <span class="material-icons-outlined">logout</span>
-            Sair
+            <span class="material-icons-outlined">logout</span>Sair
         </button>
-
     </aside>
 
+    <div class="dash-wrapper">
 
-    <div class="dashboard-content-dashboard">
-        <div class="header-dashboard">
+        <div class="dash-header">
             <h1>Dashboard Acadêmico</h1>
-            <p>Análise de Desempenho e Frequência em Tempo Real</p>
+            <p>Análise de desempenho e frequência em tempo real</p>
         </div>
 
-        <div class="summary-dashboard">
-            <div class="stat-item-dashboard">Alunos Ativos<span id="totalAlunos">0</span></div>
-            <div class="stat-item-dashboard">Média de Faltas<span id="mediaFaltas">0</span></div>
-        </div>
+        <div class="dash-body">
 
-        <div class="card-dashboard card-filter-dashboard mb-4-dashboard">
-            <h3>Filtros de Visualização</h3>
-            <div class="filter-group-dashboard">
-                <div class="filter-section-dashboard">
-                    <span>Turma:</span>
-                    <button class="btn-filter active" onclick="filtrar('turma', 'TODAS', this)">Todas</button>
-                    <button class="btn-filter" onclick="filtrar('turma', 'Sala 01', this)">Sala 01</button>
-                    <button class="btn-filter" onclick="filtrar('turma', 'Sala 02', this)">Sala 02</button>
-                    <button class="btn-filter" onclick="filtrar('turma', 'Sala 03', this)">Sala 03</button>
-                    <button class="btn-filter" onclick="filtrar('turma', 'Sala 04', this)">Sala 04</button>
+            <!-- KPIs -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon blue"><span class="material-icons-outlined">school</span></div>
+                    <div class="kpi-info">
+                        <div class="label">Alunos Encontrados</div>
+                        <div class="value" id="kpi-total">—</div>
+                    </div>
                 </div>
-                <div class="filter-section-dashboard">
-                    <span>Turno:</span>
-                    <button class="btn-filter active" onclick="filtrar('turno', 'TODOS', this)">Todos</button>
-                    <button class="btn-filter" onclick="filtrar('turno', 'Manhã', this)">Manhã</button>
-                    <button class="btn-filter" onclick="filtrar('turno', 'Tarde', this)">Tarde</button>
+                <div class="kpi-card">
+                    <div class="kpi-icon amber"><span class="material-icons-outlined">event_busy</span></div>
+                    <div class="kpi-info">
+                        <div class="label">Média de Faltas</div>
+                        <div class="value" id="kpi-faltas">—</div>
+                    </div>
                 </div>
-                <div class="filter-section-dashboard">
-                    <span>Matéria:</span>
-                    <button class="btn-filter active" onclick="filtrar('disciplina', 'TODAS', this)">Todas</button>
-                    <button class="btn-filter" onclick="filtrar('disciplina', ' ', this)">Inglês</button>
-                    <button class="btn-filter" onclick="filtrar('disciplina', 'ESPANHOL', this)">Espanhol</button>
+                <div class="kpi-card">
+                    <div class="kpi-icon green"><span class="material-icons-outlined">grade</span></div>
+                    <div class="kpi-info">
+                        <div class="label">Média Geral</div>
+                        <div class="value" id="kpi-media">—</div>
+                    </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="stats-grid-dashboard">
-            <div class="card-dashboard">
-                <h3>Total de Faltas por Turma</h3>
-                <div class="chart-container-dashboard">
-                    <canvas id="chartFaltas"></canvas>
+                <div class="kpi-card">
+                    <div class="kpi-icon red"><span class="material-icons-outlined">trending_down</span></div>
+                    <div class="kpi-info">
+                        <div class="label">Alunos em Risco</div>
+                        <div class="value" id="kpi-risco">—</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="card-dashboard">
-                <h3>Média de Notas por Turma</h3>
-                <div class="chart-container-dashboard">
-                    <canvas id="chartMedias"></canvas>
+            <!-- Filtros -->
+            <div class="filter-bar">
+                <div class="filter-bar-title">
+                    <span class="material-icons-outlined">tune</span>Filtros
+                </div>
+                <div class="filter-rows">
+
+                    <div class="filter-row">
+                        <span class="filter-row-label">Turma:</span>
+                        <button class="btn-filter active" onclick="filtrar('turma','TODAS',this)">Todas</button>
+                        <button class="btn-filter" onclick="filtrar('turma','Sala 01',this)">Sala 01</button>
+                        <button class="btn-filter" onclick="filtrar('turma','Sala 02',this)">Sala 02</button>
+                        <button class="btn-filter" onclick="filtrar('turma','Sala 03',this)">Sala 03</button>
+                        <button class="btn-filter" onclick="filtrar('turma','Sala 04',this)">Sala 04</button>
+                    </div>
+
+                    <div class="filter-row">
+                        <span class="filter-row-label">Turno:</span>
+                        <button class="btn-filter active" onclick="filtrar('turno','TODOS',this)">Todos</button>
+                        <button class="btn-filter" onclick="filtrar('turno','Manhã',this)">Manhã</button>
+                        <button class="btn-filter" onclick="filtrar('turno','Tarde',this)">Tarde</button>
+                        <button class="btn-filter" onclick="filtrar('turno','Noite',this)">Noite</button>
+                    </div>
+
+                    <div class="filter-row">
+                        <span class="filter-row-label">Disciplina:</span>
+                        <button class="btn-filter active" onclick="filtrar('disciplina','TODAS',this)">Todas</button>
+                        <button class="btn-filter" onclick="filtrar('disciplina','INGLES',this)">Inglês</button>
+                        <button class="btn-filter" onclick="filtrar('disciplina','ESPANHOL',this)">Espanhol</button>
+                    </div>
+
+                    <div class="filter-row">
+                        <span class="filter-row-label">Módulo:</span>
+                        <button class="btn-filter active" onclick="filtrar('modulo','TODOS',this)">Todos</button>
+                        <button class="btn-filter" onclick="filtrar('modulo','1',this)">Módulo 1</button>
+                        <button class="btn-filter" onclick="filtrar('modulo','2',this)">Módulo 2</button>
+                        <button class="btn-filter" onclick="filtrar('modulo','3',this)">Módulo 3</button>
+                        <button class="btn-filter" onclick="filtrar('modulo','4',this)">Módulo 4</button>
+                        <button class="btn-filter" onclick="filtrar('modulo','5',this)">Módulo 5</button>
+                        <button class="btn-filter" onclick="filtrar('modulo','6',this)">Módulo 6</button>
+                    </div>
+
+                    <div class="filter-row">
+                        <span class="filter-row-label">Situação:</span>
+                        <button class="btn-filter active" onclick="filtrar('situacao','TODAS',this)">Todas</button>
+                        <button class="btn-filter" onclick="filtrar('situacao','Ativo',this)">Ativo</button>
+                        <button class="btn-filter" onclick="filtrar('situacao','Concluído',this)">Concluído</button>
+                        <button class="btn-filter" onclick="filtrar('situacao','Inativo',this)">Inativo</button>
+                    </div>
+
                 </div>
             </div>
 
-            <div class="card-dashboard">
-                <h3>Desempenho Geral (Aproveitamento)</h3>
-                <div class="chart-container-dashboard">
-                    <canvas id="chartDesempenho"></canvas>
+            <!-- Gráficos -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Faltas por Turma</h3>
+                    <div class="chart-container"><canvas id="chartFaltas"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3>Média de Notas por Turma</h3>
+                    <div class="chart-container"><canvas id="chartMedias"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3>Aproveitamento Geral</h3>
+                    <div class="chart-container"><canvas id="chartDesempenho"></canvas></div>
                 </div>
             </div>
+
+            <!-- Tabela -->
+            <div class="table-card">
+                <div class="table-card-header">
+                    <h3>Lista de Alunos</h3>
+                    <span id="table-count">carregando...</span>
+                </div>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Turma</th>
+                                <th>Turno</th>
+                                <th>Módulo</th>
+                                <th>Disciplina</th>
+                                <th>Nota Final</th>
+                                <th>Faltas</th>
+                                <th>Situação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaCorpoDashboard">
+                            <tr><td colspan="8" class="empty-state">Aguardando dados do Firebase...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <script src="CORD_dashboard.js"></script>
+    <!-- ================================================================
+         SCRIPT ÚNICO — sem imports duplicados, sem conflito de variáveis
+    ================================================================ -->
     <script>
-        function fazerLogout() {
-            if (confirm("Deseja realmente sair?")) {
-                localStorage.clear();
-                window.location.href = "index.html";
+    (function () {
+        'use strict';
+
+        /* ----------------------------------------------------------
+           1. FIREBASE — inicializa apenas se ainda não foi feito
+        ---------------------------------------------------------- */
+        const CFG = {
+            apiKey:            "AIzaSyBvSOKw2VTeG1uMDqDn3-SWi0Hsf2z6i2w",
+            authDomain:        "sistema-cci-2026.firebaseapp.com",
+            databaseURL:       "https://sistema-cci-default-rtdb.firebaseio.com/",
+            projectId:         "sistema-cci-2026",
+            storageBucket:     "sistema-cci-2026.firebasestorage.app",
+            messagingSenderId: "633401547904",
+            appId:             "1:633401547904:web:0572615ffba4227a6f5a65"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(CFG);
+        }
+
+        const db = firebase.database();
+
+        /* ----------------------------------------------------------
+           2. ESTADO
+        ---------------------------------------------------------- */
+        let chartFaltas, chartMedias, chartDesempenho;
+        let dadosBrutos = {};
+
+        const filtroAtual = {
+            turma:      'TODAS',
+            turno:      'TODOS',
+            disciplina: 'TODAS',
+            modulo:     'TODOS',
+            situacao:   'TODAS'
+        };
+
+        /* ----------------------------------------------------------
+           3. INICIALIZAÇÃO — tema + listener Firebase
+        ---------------------------------------------------------- */
+        document.addEventListener('DOMContentLoaded', function () {
+            // Tema salvo
+            if (localStorage.getItem('tema-escolhido') === 'light') {
+                document.body.classList.add('light-theme');
+            }
+
+            // Listener em tempo real
+            db.ref('alunos').on('value', function (snapshot) {
+                dadosBrutos = snapshot.val() || {};
+                console.log('[Dashboard] alunos carregados:', Object.keys(dadosBrutos).length);
+                aplicarFiltros();
+            }, function (err) {
+                console.error('[Dashboard] erro Firebase:', err);
+                setEl('table-count', 'Erro ao carregar dados');
+            });
+        });
+
+        /* ----------------------------------------------------------
+           4. FILTROS
+        ---------------------------------------------------------- */
+        window.filtrar = function (tipo, valor, el) {
+            el.parentElement.querySelectorAll('.btn-filter')
+              .forEach(function (b) { b.classList.remove('active'); });
+            el.classList.add('active');
+            filtroAtual[tipo] = valor;
+            aplicarFiltros();
+        };
+
+        function passaFiltro(aluno) {
+            if (filtroAtual.turma !== 'TODAS' && aluno.turma !== filtroAtual.turma)
+                return false;
+
+            if (filtroAtual.turno !== 'TODOS') {
+                var turno = (aluno.turno || '').toLowerCase();
+                if (!turno.includes(filtroAtual.turno.toLowerCase()))
+                    return false;
+            }
+
+            if (filtroAtual.disciplina !== 'TODAS') {
+                var disc = (
+                    (aluno.escola_regular && aluno.escola_regular.nome)
+                    || aluno.disciplina
+                    || ''
+                ).toUpperCase();
+                if (!disc.includes(filtroAtual.disciplina))
+                    return false;
+            }
+
+            if (filtroAtual.modulo !== 'TODOS') {
+                if (String(aluno.modulo || '1') !== filtroAtual.modulo)
+                    return false;
+            }
+
+            if (filtroAtual.situacao !== 'TODAS') {
+                if ((aluno.situacao || 'Ativo') !== filtroAtual.situacao)
+                    return false;
+            }
+
+            return true;
+        }
+
+        /* ----------------------------------------------------------
+           5. CÁLCULO DE NOTA FINAL
+        ---------------------------------------------------------- */
+        function calcNotaFinal(notas) {
+            if (!notas) return 0;
+            var soma = 0, cont = 0;
+            for (var i = 1; i <= 4; i++) {
+                var p = notas['p' + i];
+                if (p) {
+                    soma += (parseFloat(p.n1 || 0) + parseFloat(p.n2 || 0)) / 2;
+                    cont++;
+                }
+            }
+            return cont > 0 ? soma / cont : 0;
+        }
+
+        /* ----------------------------------------------------------
+           6. APLICAR FILTROS E ATUALIZAR TELA
+        ---------------------------------------------------------- */
+        function aplicarFiltros() {
+            var resumoTurmas = {};
+            var totalAlunos  = 0;
+            var somaFaltas   = 0;
+            var somaMedias   = 0;
+            var alunosRisco  = 0;
+            var acimaMedia   = 0;
+            var abaixoMedia  = 0;
+            var listaTabela  = [];
+
+            Object.keys(dadosBrutos).forEach(function (id) {
+                var aluno = dadosBrutos[id];
+                if (!passaFiltro(aluno)) return;
+
+                totalAlunos++;
+                var faltas    = aluno.faltas_porSemestre || 0;
+                somaFaltas   += faltas;
+
+                var notaFinal = calcNotaFinal(aluno.notas);
+                somaMedias   += notaFinal;
+
+                if (notaFinal > 0 && notaFinal < 6) alunosRisco++;
+
+                var t = aluno.turma || 'Sem Turma';
+                if (!resumoTurmas[t]) resumoTurmas[t] = { faltas: 0, somaNotas: 0, qtd: 0 };
+                resumoTurmas[t].faltas    += faltas;
+                resumoTurmas[t].somaNotas += notaFinal;
+                resumoTurmas[t].qtd++;
+
+                if (notaFinal >= 6) acimaMedia++; else abaixoMedia++;
+
+                listaTabela.push(Object.assign({}, aluno, { _id: id, _notaFinal: notaFinal }));
+            });
+
+            /* KPIs */
+            setEl('kpi-total',  totalAlunos);
+            setEl('kpi-faltas', totalAlunos > 0 ? (somaFaltas  / totalAlunos).toFixed(1) : '0');
+            setEl('kpi-media',  totalAlunos > 0 ? (somaMedias  / totalAlunos).toFixed(1) : '0');
+            setEl('kpi-risco',  alunosRisco);
+
+            renderizarTabela(listaTabela);
+            atualizarGraficos(resumoTurmas, acimaMedia, abaixoMedia);
+        }
+
+        /* ----------------------------------------------------------
+           7. TABELA
+        ---------------------------------------------------------- */
+        function renderizarTabela(alunos) {
+            var corpo = document.getElementById('tabelaCorpoDashboard');
+            var count = document.getElementById('table-count');
+
+            if (count) count.textContent = alunos.length + ' aluno' + (alunos.length !== 1 ? 's' : '');
+            if (!corpo) return;
+
+            if (alunos.length === 0) {
+                corpo.innerHTML = '<tr><td colspan="8" class="empty-state">Nenhum aluno corresponde aos filtros.</td></tr>';
+                return;
+            }
+
+            corpo.innerHTML = '';
+            alunos.forEach(function (aluno) {
+                var nota = aluno._notaFinal;
+                var cls  = nota === 0 ? 'amarelo' : (nota >= 6 ? 'verde' : 'vermelho');
+                var disc = (aluno.escola_regular && aluno.escola_regular.nome)
+                           || aluno.disciplina || '---';
+                var sit  = aluno.situacao || 'Ativo';
+                var mod  = aluno.modulo ? aluno.modulo + 'º' : '---';
+                var nome = aluno.nome_completo || aluno.nome || '---';
+
+                var tr = document.createElement('tr');
+                tr.innerHTML =
+                    '<td>' + nome + '</td>' +
+                    '<td>' + (aluno.turma  || '---') + '</td>' +
+                    '<td>' + (aluno.turno  || '---') + '</td>' +
+                    '<td>' + mod  + '</td>' +
+                    '<td>' + disc + '</td>' +
+                    '<td><span class="badge-nota ' + cls + '">' + nota.toFixed(1) + '</span></td>' +
+                    '<td>' + (aluno.faltas_porSemestre || 0) + '</td>' +
+                    '<td>' + sit + '</td>';
+                corpo.appendChild(tr);
+            });
+        }
+
+        /* ----------------------------------------------------------
+           8. GRÁFICOS
+        ---------------------------------------------------------- */
+        var COLORS = ['#38bdf8', '#22c55e', '#f59e0b', '#ef4444', '#a78bfa', '#fb923c'];
+
+        var baseOpts = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: '#94a3b8', font: { size: 12, family: 'Poppins' } } }
+            },
+            scales: {
+                y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,.04)' } },
+                x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,.02)' } }
+            }
+        };
+
+        function atualizarGraficos(resumo, acima, abaixo) {
+            var labels = Object.keys(resumo);
+            var faltas = labels.map(function (l) { return resumo[l].faltas; });
+            var medias = labels.map(function (l) {
+                return resumo[l].qtd > 0
+                    ? parseFloat((resumo[l].somaNotas / resumo[l].qtd).toFixed(2))
+                    : 0;
+            });
+
+            /* Faltas */
+            if (chartFaltas) chartFaltas.destroy();
+            var ctxF = document.getElementById('chartFaltas');
+            if (ctxF) {
+                chartFaltas = new Chart(ctxF, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{ label: 'Faltas', data: faltas,
+                            backgroundColor: COLORS, borderRadius: 10, borderSkipped: false }]
+                    },
+                    options: baseOpts
+                });
+            }
+
+            /* Médias */
+            if (chartMedias) chartMedias.destroy();
+            var ctxM = document.getElementById('chartMedias');
+            if (ctxM) {
+                chartMedias = new Chart(ctxM, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{ label: 'Média', data: medias,
+                            backgroundColor: 'rgba(56,189,248,.2)',
+                            borderColor: '#38bdf8', borderWidth: 2,
+                            borderRadius: 10, borderSkipped: false }]
+                    },
+                    options: Object.assign({}, baseOpts, {
+                        scales: Object.assign({}, baseOpts.scales, {
+                            y: Object.assign({}, baseOpts.scales.y, { min: 0, max: 10 })
+                        })
+                    })
+                });
+            }
+
+            /* Desempenho */
+            if (chartDesempenho) chartDesempenho.destroy();
+            var ctxD = document.getElementById('chartDesempenho');
+            if (ctxD) {
+                chartDesempenho = new Chart(ctxD, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Aprovados (≥ 6)', 'Reprovados (< 6)'],
+                        datasets: [{ data: [acima, abaixo],
+                            backgroundColor: ['#22c55e', '#ef4444'],
+                            borderWidth: 0, hoverOffset: 6 }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '65%',
+                        plugins: {
+                            legend: { labels: { color: '#94a3b8', font: { size: 12 }, padding: 14 } }
+                        }
+                    }
+                });
             }
         }
-        // Executa assim que a página carrega para verificar a escolha anterior do usuário
-document.addEventListener("DOMContentLoaded", function() {
-    const temaSalvo = localStorage.getItem("tema-escolhido");
-    
-    if (temaSalvo === "light") {
-        document.body.classList.add("light-theme");
-        atualizarInterfaceBotao(true);
-    }
-});
 
-function alternarTema() {
-    const body = document.body;
-    body.classList.toggle("light-theme");
-    
-    const ehModoClaro = body.classList.contains("light-theme");
-    
-    // Salva o estado atual no navegador
-    localStorage.setItem("tema-escolhido", ehModoClaro ? "light" : "dark");
-    
-    atualizarInterfaceBotao(ehModoClaro);
-}
-
-function atualizarInterfaceBotao(ehModoClaro) {
-    const icone = document.getElementById("tema-icon");
-    const texto = document.getElementById("tema-texto");
-    
-    if (icone && texto) {
-        if (ehModoClaro) {
-            icone.textContent = "dark_mode";
-            texto.textContent = "Modo Escuro";
-        } else {
-            icone.textContent = "light_mode";
-            texto.textContent = "Modo Claro";
+        /* ----------------------------------------------------------
+           9. UTILITÁRIOS
+        ---------------------------------------------------------- */
+        function setEl(id, val) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = val;
         }
-    }
-}
-    </script>
-    <script src="continuidade.js"></script>
-</body>
 
+        window.fazerLogout = function () {
+            Swal.fire({
+                title: 'Deseja sair?', icon: 'question',
+                background: '#0f172a', color: '#fff',
+                confirmButtonColor: '#ef4444', cancelButtonColor: '#334155',
+                showCancelButton: true, confirmButtonText: 'Sair'
+            }).then(function (r) {
+                if (r.isConfirmed) {
+                    localStorage.clear();
+                    window.location.href = 'telalogin.html';
+                }
+            });
+        };
+
+    })(); // IIFE — nenhuma variável vaza para o escopo global
+    </script>
+
+</body>
 </html>
