@@ -292,8 +292,12 @@
         body.light-theme .btn-filter:hover { background: #e2e8f0; color: #0f172a; }
     </style>
 </head>
-
-<body>
+    <body>
+<script>
+    if (localStorage.getItem('tema') === 'light') {
+        document.body.classList.add('light');
+    }
+</script>
 
     <aside class="sidebar">
         <div>
