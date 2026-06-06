@@ -23,6 +23,13 @@
 </head>
 
 <body>
+    
+    <script>
+        if (localStorage.getItem('tema') === 'light') {
+            document.body.classList.add('light');
+        }
+    </script>
+    
 
     <aside class="sidebar">
 
@@ -439,6 +446,13 @@
         document.getElementById('importarAlunos').addEventListener('change', importarPlanilha);
     </script>
 
+<script>
+        if (localStorage.getItem("tema-escolhido") === "light") {
+            document.body.classList.add("light-theme");
+        } else {
+            document.body.classList.remove("light-theme");
+        }
+    </script>
 </body>
 
 </html>
