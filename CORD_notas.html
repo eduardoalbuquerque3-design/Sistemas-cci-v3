@@ -5,16 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCI - Sistema de Notas</title>
-        <link rel="icon" href="CCI_LOGO.png"
-        style="border-radius: 50%;">
+    <link rel="icon" href="CCI_LOGO.png">
 
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <!-- XLSX para importar planilha -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <!-- jsPDF para exportar PDF real -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf-plugin-autotable.min.js"></script>
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
@@ -39,6 +44,7 @@
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
+            gap: 16px;
         }
 
         .hero-notas h1 {
@@ -47,9 +53,7 @@
             color: #f1f5f9;
         }
 
-        .hero-notas h1 span {
-            color: #38bdf8;
-        }
+        .hero-notas h1 span { color: #38bdf8; }
 
         .hero-notas p {
             color: #64748b;
@@ -61,6 +65,7 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         /* =====================================================
@@ -74,12 +79,12 @@
             min-height: 0;
         }
 
-        /* ---- PAINEL ESQUERDO: lista de alunos ---- */
+        /* ---- PAINEL ESQUERDO ---- */
         .students-panel-notas {
-            width: 260px;
+            width: 270px;
             flex-shrink: 0;
-            background: rgba(255, 255, 255, .03);
-            border: 1px solid rgba(255, 255, 255, .06);
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.06);
             border-radius: 20px;
             display: flex;
             flex-direction: column;
@@ -88,7 +93,7 @@
 
         .panel-top-notas {
             padding: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, .06);
+            border-bottom: 1px solid rgba(255,255,255,.06);
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -104,8 +109,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255, 255, 255, .04);
-            border: 1px solid rgba(255, 255, 255, .07);
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.07);
             border-radius: 12px;
             padding: 8px 12px;
         }
@@ -121,9 +126,7 @@
             cursor: pointer;
         }
 
-        .filtro-wrapper-notas select option {
-            background: #0f172a;
-        }
+        .filtro-wrapper-notas select option { background: #0f172a; }
 
         .filtro-wrapper-notas .material-icons-outlined {
             font-size: 18px;
@@ -134,8 +137,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255, 255, 255, .04);
-            border: 1px solid rgba(255, 255, 255, .07);
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.07);
             border-radius: 12px;
             padding: 8px 12px;
         }
@@ -155,9 +158,7 @@
             width: 100%;
         }
 
-        .search-box-notas input::placeholder {
-            color: #475569;
-        }
+        .search-box-notas input::placeholder { color: #475569; }
 
         .student-list-notas {
             list-style: none;
@@ -169,7 +170,6 @@
         .student-list-notas::-webkit-scrollbar { width: 4px; }
         .student-list-notas::-webkit-scrollbar-track { background: transparent; }
         .student-list-notas::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
-
         .student-list-notas li { margin-bottom: 4px; }
 
         .student-item-btn {
@@ -190,12 +190,12 @@
         }
 
         .student-item-btn:hover {
-            background: rgba(255, 255, 255, .05);
+            background: rgba(255,255,255,.05);
             color: #e2e8f0;
         }
 
         .student-item-btn.active-student {
-            background: rgba(56, 189, 248, .12);
+            background: rgba(56,189,248,.12);
             color: #38bdf8;
             font-weight: 600;
         }
@@ -212,7 +212,7 @@
             font-size: 13px;
         }
 
-        /* ---- PAINEL DIREITO: boletim ---- */
+        /* ---- PAINEL DIREITO ---- */
         .boletim-panel-notas {
             flex: 1;
             display: flex;
@@ -222,13 +222,13 @@
             min-width: 0;
         }
 
-        /* ---- CABEÇALHO DO BOLETIM ---- */
+        /* CABEÇALHO DO BOLETIM */
         .boletim-header-notas {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(255, 255, 255, .03);
-            border: 1px solid rgba(255, 255, 255, .06);
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.06);
             border-radius: 18px;
             padding: 18px 24px;
             flex-shrink: 0;
@@ -246,17 +246,14 @@
             margin-top: 2px;
         }
 
-        .boletim-header-notas p strong {
-            color: #94a3b8;
-        }
+        .boletim-header-notas p strong { color: #94a3b8; }
 
-        /* Card Média Final no header */
         .media-final-card-notas {
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: rgba(56, 189, 248, .08);
-            border: 1px solid rgba(56, 189, 248, .2);
+            background: rgba(56,189,248,.08);
+            border: 1px solid rgba(56,189,248,.2);
             border-radius: 16px;
             padding: 14px 28px;
             min-width: 110px;
@@ -292,27 +289,22 @@
         .periodos-scroll-notas::-webkit-scrollbar-track { background: transparent; }
         .periodos-scroll-notas::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
 
-        /* Bloco de par (Período 1 + Período 2) = 1 linha */
         .semestre-row-notas {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 14px;
         }
 
-        /* Card individual de período */
         .periodo-card-notas {
-            background: rgba(255, 255, 255, .03);
-            border: 1px solid rgba(255, 255, 255, .06);
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.06);
             border-radius: 18px;
             padding: 18px 20px;
             transition: border-color .25s;
         }
 
-        .periodo-card-notas:hover {
-            border-color: rgba(56, 189, 248, .18);
-        }
+        .periodo-card-notas:hover { border-color: rgba(56,189,248,.18); }
 
-        /* Topo do card: título + badge da média */
         .periodo-top-notas {
             display: flex;
             align-items: center;
@@ -327,9 +319,9 @@
         }
 
         .media-badge-notas {
-            background: rgba(56, 189, 248, .12);
+            background: rgba(56,189,248,.12);
             color: #38bdf8;
-            border: 1px solid rgba(56, 189, 248, .22);
+            border: 1px solid rgba(56,189,248,.22);
             border-radius: 999px;
             padding: 4px 14px;
             font-size: 13px;
@@ -337,18 +329,17 @@
         }
 
         .media-badge-notas.aprovado {
-            background: rgba(34, 197, 94, .12);
+            background: rgba(34,197,94,.12);
             color: #22c55e;
-            border-color: rgba(34, 197, 94, .22);
+            border-color: rgba(34,197,94,.22);
         }
 
         .media-badge-notas.reprovado {
-            background: rgba(239, 68, 68, .12);
+            background: rgba(239,68,68,.12);
             color: #ef4444;
-            border-color: rgba(239, 68, 68, .22);
+            border-color: rgba(239,68,68,.22);
         }
 
-        /* Linha N1 + N2 + fórmula */
         .notas-row-notas {
             display: grid;
             grid-template-columns: 1fr 1fr auto;
@@ -370,9 +361,10 @@
             letter-spacing: .08em;
         }
 
+        /* INPUT DE NOTA — com estado de erro para > 10 */
         .input-group-notas input {
-            background: rgba(255, 255, 255, .04);
-            border: 1px solid rgba(255, 255, 255, .08);
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.08);
             border-radius: 10px;
             padding: 10px 14px;
             color: #e2e8f0;
@@ -380,21 +372,43 @@
             font-weight: 600;
             font-family: 'Poppins', sans-serif;
             width: 100%;
-            transition: border-color .2s, background .2s;
+            transition: border-color .2s, background .2s, box-shadow .2s;
         }
 
         .input-group-notas input:focus {
             outline: none;
             border-color: #38bdf8;
-            background: rgba(56, 189, 248, .06);
+            background: rgba(56,189,248,.06);
         }
 
         .input-group-notas input:not(:disabled) {
-            border-color: rgba(56, 189, 248, .35);
-            background: rgba(56, 189, 248, .05);
+            border-color: rgba(56,189,248,.35);
+            background: rgba(56,189,248,.05);
         }
 
-        /* Fórmula visual: (N1 + N2) / 2 = média */
+        /* Estado de erro: nota inválida (>10 ou <0) */
+        .input-group-notas input.nota-invalida {
+            border-color: #ef4444 !important;
+            background: rgba(239,68,68,.08) !important;
+            box-shadow: 0 0 0 3px rgba(239,68,68,.15) !important;
+            animation: shake .3s ease;
+        }
+
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        /* Tooltip de erro */
+        .erro-nota {
+            font-size: 10px;
+            color: #ef4444;
+            font-weight: 600;
+            margin-top: 3px;
+            display: none;
+        }
+
         .formula-label-notas {
             font-size: 11px;
             color: #475569;
@@ -404,11 +418,11 @@
         }
 
         /* =====================================================
-           CARD DE CONCLUSÃO (nota final)
+           CARD DE CONCLUSÃO
         ===================================================== */
         .conclusao-card-notas {
             background: linear-gradient(135deg, rgba(56,189,248,.08), rgba(99,102,241,.08));
-            border: 1px solid rgba(56, 189, 248, .2);
+            border: 1px solid rgba(56,189,248,.2);
             border-radius: 18px;
             padding: 18px 24px;
             display: flex;
@@ -472,12 +486,12 @@
         }
 
         .conclusao-status-notas.aprovado {
-            background: rgba(34, 197, 94, .12);
+            background: rgba(34,197,94,.12);
             color: #22c55e;
         }
 
         .conclusao-status-notas.reprovado {
-            background: rgba(239, 68, 68, .12);
+            background: rgba(239,68,68,.12);
             color: #ef4444;
         }
 
@@ -499,9 +513,7 @@
             color: #1e293b;
         }
 
-        .placeholder-aviso-notas p {
-            font-size: 14px;
-        }
+        .placeholder-aviso-notas p { font-size: 14px; }
 
         /* =====================================================
            LIGHT THEME OVERRIDES
@@ -517,6 +529,7 @@
         }
 
         body.light-theme .panel-top-notas { border-color: #e2e8f0; }
+
         body.light-theme .filtro-wrapper-notas,
         body.light-theme .search-box-notas {
             background: #f1f5f9;
@@ -548,7 +561,7 @@
         }
 
         /* =====================================================
-           BOTÕES (reutilizando do style.css mas garantindo aqui)
+           BOTÕES
         ===================================================== */
         .btn-outline {
             display: flex;
@@ -586,6 +599,60 @@
         }
 
         .btn-green:hover { background: rgba(34,197,94,.25); transform: translateY(-1px); }
+
+        /* Botão importar com ícone secundário */
+        .btn-import {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .25s;
+            font-family: 'Poppins', sans-serif;
+            background: rgba(99,102,241,.15);
+            border: 1px solid rgba(99,102,241,.3);
+            color: #818cf8;
+        }
+
+        .btn-import:hover { background: rgba(99,102,241,.25); transform: translateY(-1px); }
+
+        /* Contador de alunos na lista */
+        .lista-contador {
+            font-size: 11px;
+            color: #475569;
+            text-align: right;
+            padding: 0 16px 8px;
+        }
+
+        /* =====================================================
+           BADGE MÓDULO
+        ===================================================== */
+        .modulo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99,102,241,.12);
+            border: 1px solid rgba(99,102,241,.25);
+            color: #818cf8;
+            border-radius: 999px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* =====================================================
+           PRINT STYLES (mantendo como fallback)
+        ===================================================== */
+        @media print {
+            .sidebar, .hero-actions-notas, .students-panel-notas { display: none !important; }
+            .main-content-notas { padding: 0; }
+            .notas-layout-notas { display: block; }
+            .boletim-panel-notas { overflow: visible; }
+            .periodos-scroll-notas { overflow: visible; }
+        }
     </style>
 </head>
 
@@ -625,16 +692,28 @@
                 <p>Gerencie notas, médias e desempenho acadêmico dos alunos.</p>
             </div>
             <div class="hero-actions-notas">
+
+                <!-- Baixar template -->
+                <button class="btn-import" onclick="baixarTemplate()">
+                    <span class="material-icons-outlined">download</span>Template
+                </button>
+
+                <!-- Importar planilha -->
+                <button class="btn-import" onclick="document.getElementById('importarNotas').click()">
+                    <span class="material-icons-outlined">upload_file</span>Importar Planilha
+                </button>
+                <input type="file" id="importarNotas" accept=".xlsx,.csv" hidden>
+
+                <!-- Exportar PDF -->
                 <button class="btn-outline" onclick="exportarPDF()">
                     <span class="material-icons-outlined">picture_as_pdf</span>Exportar PDF
                 </button>
+
+                <!-- Editar / Salvar -->
                 <button id="btn-editar-notas" class="btn-green" onclick="toggleEdicao()">
                     <span class="material-icons-outlined">edit</span>Editar
                 </button>
-                <button class="btn-green" onclick="document.getElementById('importarNotas').click()">
-                    <span class="material-icons-outlined">upload</span>Importar Planilha
-                </button>
-                <input type="file" id="importarNotas" accept=".xlsx,.csv" hidden>
+
             </div>
         </section>
 
@@ -656,6 +735,7 @@
                         <input type="text" id="busca-aluno" placeholder="Pesquisar aluno..." onkeyup="filtrarListaAlunos()">
                     </div>
                 </div>
+                <p class="lista-contador" id="lista-contador"></p>
                 <ul class="student-list-notas" id="student-list">
                     <li class="loading-student-notas">Carregando alunos...</li>
                 </ul>
@@ -664,12 +744,18 @@
             <!-- PAINEL DIREITO: boletim -->
             <section class="boletim-panel-notas">
 
-                <!-- Cabeçalho do aluno selecionado -->
                 <div class="boletim-header-notas">
                     <div>
                         <input type="hidden" id="current-student-id">
                         <h2 id="display-name">Selecione um aluno</h2>
-                        <p>Turma: <strong id="display-course">---</strong> &nbsp;|&nbsp; Módulo: <strong id="display-modulo">---</strong></p>
+                        <p>
+                            Turma: <strong id="display-course">---</strong>
+                            &nbsp;|&nbsp;
+                            <span class="modulo-badge">
+                                <span class="material-icons-outlined" style="font-size:14px">school</span>
+                                <span id="display-modulo">---</span>
+                            </span>
+                        </p>
                     </div>
                     <div class="media-final-card-notas">
                         <span>Nota Final</span>
@@ -677,7 +763,6 @@
                     </div>
                 </div>
 
-                <!-- Container dos períodos (scroll) -->
                 <div class="periodos-scroll-notas" id="periodos-container">
                     <div class="placeholder-aviso-notas">
                         <span class="material-icons-outlined">school</span>
@@ -692,6 +777,9 @@
     </main>
 
     <script>
+        /* ============================================================
+           FIREBASE
+        ============================================================ */
         const firebaseConfig = {
             apiKey: "AIzaSyBvSOKw2VTeG1uMDqDn3-SWi0Hsf2z6i2w",
             authDomain: "sistema-cci-2026.firebaseapp.com",
@@ -713,7 +801,7 @@
         ============================================================ */
         function iniciarAplicacao() {
             db.ref('alunos').on('value', (snapshot) => {
-                todosOsAlunos = snapshot.val();
+                todosOsAlunos = snapshot.val() || {};
                 atualizarSeletorTurmas();
                 renderizarListaFiltrada();
             });
@@ -722,9 +810,7 @@
         function atualizarSeletorTurmas() {
             const select = document.getElementById('filtro-turma');
             const turmas = new Set();
-            if (todosOsAlunos) {
-                Object.values(todosOsAlunos).forEach(a => { if (a.turma) turmas.add(a.turma); });
-            }
+            Object.values(todosOsAlunos).forEach(a => { if (a.turma) turmas.add(a.turma); });
             select.innerHTML = '<option value="todos">Todas as Turmas</option>';
             Array.from(turmas).sort().forEach(turma => {
                 const opt = document.createElement('option');
@@ -738,13 +824,16 @@
             const lista = document.getElementById('student-list');
             const filtro = document.getElementById('filtro-turma').value;
             lista.innerHTML = "";
-            if (!todosOsAlunos) {
+            if (!todosOsAlunos || Object.keys(todosOsAlunos).length === 0) {
                 lista.innerHTML = "<li class='loading-student-notas'>Nenhum aluno encontrado.</li>";
+                document.getElementById('lista-contador').textContent = '';
                 return;
             }
+            let count = 0;
             Object.keys(todosOsAlunos).forEach(id => {
                 const aluno = todosOsAlunos[id];
                 if (filtro === "todos" || aluno.turma === filtro) {
+                    count++;
                     const nome = aluno.nome_completo || aluno.nome || "Sem Nome";
                     const li = document.createElement('li');
                     li.innerHTML = `<button class="student-item-btn" id="btn-${id}" onclick="selecionarAluno('${id}')">
@@ -752,18 +841,17 @@
                     lista.appendChild(li);
                 }
             });
+            document.getElementById('lista-contador').textContent = `${count} aluno${count !== 1 ? 's' : ''}`;
         }
 
         function selecionarAluno(id) {
             document.querySelectorAll('.student-item-btn').forEach(b => b.classList.remove('active-student'));
             document.getElementById(`btn-${id}`)?.classList.add('active-student');
-
             const aluno = todosOsAlunos[id];
             document.getElementById('current-student-id').value = id;
             document.getElementById('display-name').innerText = aluno.nome_completo || aluno.nome || "---";
             document.getElementById('display-course').innerText = aluno.turma || "---";
             document.getElementById('display-modulo').innerText = aluno.modulo ? `${aluno.modulo}º Módulo` : "---";
-
             renderizarNotas(aluno.notas);
             editando = false;
             atualizarBotao();
@@ -773,22 +861,16 @@
            RENDERIZAÇÃO DO BOLETIM
         ============================================================ */
         function calcMedia(n1, n2) {
-            // Média do período = (N1 + N2) / 2
             return (n1 + n2) / 2;
         }
 
         function renderizarNotas(notasExistentes) {
             const container = document.getElementById('periodos-container');
             container.innerHTML = "";
-
-            // Arrays para guardar as médias dos 4 períodos
             const medias = [];
 
-            /* ----- Linha 1: Períodos 1 e 2 ----- */
             const row1 = document.createElement('div');
             row1.className = 'semestre-row-notas';
-
-            /* ----- Linha 2: Períodos 3 e 4 ----- */
             const row2 = document.createElement('div');
             row2.className = 'semestre-row-notas';
 
@@ -799,7 +881,6 @@
                 const n2 = parseFloat(n.n2 || 0);
                 const media = calcMedia(n1, n2);
                 medias.push(media);
-
                 const badgeClass = media >= 6 ? 'aprovado' : (media > 0 ? 'reprovado' : '');
 
                 const card = document.createElement('div');
@@ -807,9 +888,7 @@
                 card.innerHTML = `
                     <div class="periodo-top-notas">
                         <h3>${i}º Período</h3>
-                        <div class="media-badge-notas ${badgeClass}" id="badge-p${i}">
-                            Média: ${media.toFixed(1)}
-                        </div>
+                        <div class="media-badge-notas ${badgeClass}" id="badge-p${i}">Média: ${media.toFixed(1)}</div>
                     </div>
                     <div class="notas-row-notas">
                         <div class="input-group-notas">
@@ -817,31 +896,61 @@
                             <input type="number" step="0.1" min="0" max="10"
                                 class="edit-nota" data-p="${chave}" data-tipo="n1"
                                 value="${n1}" disabled
-                                oninput="recalcularMedia(${i})">
+                                oninput="validarERecalcular(this, ${i})">
+                            <span class="erro-nota" id="erro-${chave}-n1">Máx. 10</span>
                         </div>
                         <div class="input-group-notas">
                             <label>Nota 2 (N2)</label>
                             <input type="number" step="0.1" min="0" max="10"
                                 class="edit-nota" data-p="${chave}" data-tipo="n2"
                                 value="${n2}" disabled
-                                oninput="recalcularMedia(${i})">
+                                oninput="validarERecalcular(this, ${i})">
+                            <span class="erro-nota" id="erro-${chave}-n2">Máx. 10</span>
                         </div>
-                        <div class="formula-label-notas">
-                            (N1 + N2) ÷ 2
-                        </div>
+                        <div class="formula-label-notas">(N1 + N2) ÷ 2</div>
                     </div>
                 `;
-
                 if (i <= 2) row1.appendChild(card);
                 else row2.appendChild(card);
             }
 
             container.appendChild(row1);
             container.appendChild(row2);
-
-            // Nota final = (M1 + M2 + M3 + M4) / 4
             const notaFinal = medias.reduce((a, b) => a + b, 0) / 4;
             atualizarNotaFinal(notaFinal, medias);
+        }
+
+        /* ============================================================
+           VALIDAÇÃO DE NOTA — bloqueia valores fora de [0, 10]
+        ============================================================ */
+        function validarERecalcular(input, periodo) {
+            const val = parseFloat(input.value);
+            const chave = input.dataset.p;
+            const tipo = input.dataset.tipo;
+            const erroEl = document.getElementById(`erro-${chave}-${tipo}`);
+
+            // Remove estado de erro anterior
+            input.classList.remove('nota-invalida');
+            if (erroEl) erroEl.style.display = 'none';
+
+            if (input.value !== '' && (isNaN(val) || val < 0 || val > 10)) {
+                input.classList.add('nota-invalida');
+                if (erroEl) {
+                    erroEl.textContent = val > 10 ? 'Máximo: 10' : 'Mínimo: 0';
+                    erroEl.style.display = 'block';
+                }
+                // Corrige o valor automaticamente
+                if (val > 10) input.value = 10;
+                if (val < 0) input.value = 0;
+
+                // Remove a classe de erro após breve exibição
+                setTimeout(() => {
+                    input.classList.remove('nota-invalida');
+                    if (erroEl) erroEl.style.display = 'none';
+                }, 1500);
+            }
+
+            recalcularMedia(periodo);
         }
 
         function recalcularMedia(periodo) {
@@ -849,8 +958,9 @@
             const inputsP = document.querySelectorAll(`.edit-nota[data-p="${chave}"]`);
             let n1 = 0, n2 = 0;
             inputsP.forEach(inp => {
-                if (inp.dataset.tipo === 'n1') n1 = parseFloat(inp.value) || 0;
-                if (inp.dataset.tipo === 'n2') n2 = parseFloat(inp.value) || 0;
+                const v = Math.min(10, Math.max(0, parseFloat(inp.value) || 0));
+                if (inp.dataset.tipo === 'n1') n1 = v;
+                if (inp.dataset.tipo === 'n2') n2 = v;
             });
             const media = calcMedia(n1, n2);
             const badge = document.getElementById(`badge-p${periodo}`);
@@ -858,7 +968,6 @@
                 badge.textContent = `Média: ${media.toFixed(1)}`;
                 badge.className = 'media-badge-notas ' + (media >= 6 ? 'aprovado' : 'reprovado');
             }
-            // Recalcula nota final
             recalcularNotaFinal();
         }
 
@@ -869,8 +978,9 @@
                 const inputs = document.querySelectorAll(`.edit-nota[data-p="${chave}"]`);
                 let n1 = 0, n2 = 0;
                 inputs.forEach(inp => {
-                    if (inp.dataset.tipo === 'n1') n1 = parseFloat(inp.value) || 0;
-                    if (inp.dataset.tipo === 'n2') n2 = parseFloat(inp.value) || 0;
+                    const v = Math.min(10, Math.max(0, parseFloat(inp.value) || 0));
+                    if (inp.dataset.tipo === 'n1') n1 = v;
+                    if (inp.dataset.tipo === 'n2') n2 = v;
                 });
                 medias.push(calcMedia(n1, n2));
             }
@@ -879,18 +989,14 @@
         }
 
         function atualizarNotaFinal(notaFinal, medias) {
-            // Remove cards de conclusão antigos
             const container = document.getElementById('periodos-container');
-            const antigoConclusao = document.getElementById('conclusao-card');
-            if (antigoConclusao) antigoConclusao.remove();
+            const antigo = document.getElementById('conclusao-card');
+            if (antigo) antigo.remove();
 
             const aprovado = notaFinal >= 6;
             const statusClass = notaFinal > 0 ? (aprovado ? 'aprovado' : 'reprovado') : '';
-            const statusText = notaFinal > 0 ? (aprovado ? 'Aprovado' : 'Reprovado') : '---';
-
-            const formulaTexto = medias
-                .map((m, i) => `M${i + 1}(${m.toFixed(1)})`)
-                .join(' + ') + ` ÷ 4`;
+            const statusText = notaFinal > 0 ? (aprovado ? '✓ Aprovado' : '✗ Reprovado') : '---';
+            const formulaTexto = medias.map((m, i) => `M${i+1}(${m.toFixed(1)})`).join(' + ') + ` ÷ 4`;
 
             const conclusaoDiv = document.createElement('div');
             conclusaoDiv.id = 'conclusao-card';
@@ -903,13 +1009,12 @@
                 </div>
                 <div class="conclusao-nota-notas">
                     <span>Nota Final</span>
-                    <strong class="${statusClass}" id="display-final">${notaFinal.toFixed(1)}</strong>
+                    <strong class="${statusClass}" id="display-final-body">${notaFinal.toFixed(1)}</strong>
                     <span class="conclusao-status-notas ${statusClass}">${statusText}</span>
                 </div>
             `;
             container.appendChild(conclusaoDiv);
 
-            // Atualiza também o card do header
             const headerFinal = document.getElementById('display-final');
             if (headerFinal) headerFinal.innerText = notaFinal.toFixed(1);
         }
@@ -919,22 +1024,44 @@
         ============================================================ */
         function toggleEdicao() {
             const id = document.getElementById('current-student-id').value;
-            if (!id) {
-                Swal.fire('Aviso', 'Selecione um aluno primeiro.', 'warning');
-                return;
-            }
+            if (!id) { Swal.fire('Aviso', 'Selecione um aluno primeiro.', 'warning'); return; }
+
             if (editando) {
+                // Verifica se há notas inválidas antes de salvar
+                let invalido = false;
+                document.querySelectorAll('.edit-nota').forEach(input => {
+                    const v = parseFloat(input.value);
+                    if (!isNaN(v) && (v < 0 || v > 10)) invalido = true;
+                });
+                if (invalido) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Notas inválidas!',
+                        text: 'Corrija todas as notas antes de salvar. Valores permitidos: 0 a 10.',
+                        background: '#0f172a', color: '#fff'
+                    });
+                    return;
+                }
+
                 const novasNotas = {};
                 document.querySelectorAll('.edit-nota').forEach(input => {
                     const p = input.dataset.p;
                     const tipo = input.dataset.tipo;
                     if (!novasNotas[p]) novasNotas[p] = {};
-                    novasNotas[p][tipo] = parseFloat(input.value) || 0;
+                    novasNotas[p][tipo] = Math.min(10, Math.max(0, parseFloat(input.value) || 0));
                 });
+
                 db.ref(`alunos/${id}/notas`).update(novasNotas).then(() => {
-                    Swal.fire({ icon: 'success', title: 'Notas salvas!', background: '#0f172a', color: '#fff', timer: 2000, showConfirmButton: false });
+                    Swal.fire({
+                        icon: 'success', title: 'Notas salvas!',
+                        background: '#0f172a', color: '#fff',
+                        timer: 2000, showConfirmButton: false
+                    });
+                }).catch(err => {
+                    Swal.fire({ icon: 'error', title: 'Erro ao salvar', text: err.message, background: '#0f172a', color: '#fff' });
                 });
             }
+
             editando = !editando;
             document.querySelectorAll('.edit-nota').forEach(i => i.disabled = !editando);
             atualizarBotao();
@@ -949,37 +1076,194 @@
 
         function filtrarListaAlunos() {
             const busca = document.getElementById('busca-aluno').value.toLowerCase();
+            let count = 0;
             document.querySelectorAll('.student-item-btn').forEach(btn => {
-                btn.parentElement.style.display = btn.innerText.toLowerCase().includes(busca) ? "" : "none";
+                const vis = btn.innerText.toLowerCase().includes(busca);
+                btn.parentElement.style.display = vis ? "" : "none";
+                if (vis) count++;
             });
-        }
-
-        function exportarPDF() {
-            const nome = document.getElementById('display-name').innerText;
-            if (nome === "Selecione um aluno") {
-                Swal.fire('Aviso', 'Selecione um aluno primeiro.', 'warning');
-                return;
-            }
-            document.title = `Boletim_${nome}`;
-            window.print();
-            setTimeout(() => { document.title = "CCI - Sistema de Notas"; }, 1000);
-        }
-
-        function fazerLogout() {
-            Swal.fire({
-                title: 'Deseja sair?', icon: 'question',
-                background: '#0f172a', color: '#fff',
-                confirmButtonColor: '#ef4444', cancelButtonColor: '#334155',
-                showCancelButton: true, confirmButtonText: 'Sair'
-            }).then(r => { if (r.isConfirmed) { localStorage.clear(); window.location.href = "telalogin.html"; } });
+            document.getElementById('lista-contador').textContent = `${count} aluno${count !== 1 ? 's' : ''}`;
         }
 
         /* ============================================================
-           IMPORTAR PLANILHA
+           EXPORTAR PDF — boletim real com jsPDF
+        ============================================================ */
+        function exportarPDF() {
+            const id = document.getElementById('current-student-id').value;
+            const nomeEl = document.getElementById('display-name').innerText;
+            if (!id || nomeEl === "Selecione um aluno") {
+                Swal.fire('Aviso', 'Selecione um aluno para exportar o boletim.', 'warning');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+            const aluno = todosOsAlunos[id];
+            const turma = aluno.turma || '---';
+            const modulo = aluno.modulo ? `${aluno.modulo}º Módulo` : '---';
+            const notas = aluno.notas || {};
+            const dataAtual = new Date().toLocaleDateString('pt-BR');
+
+            // ── Cabeçalho ──────────────────────────────────────────
+            doc.setFillColor(7, 21, 47);
+            doc.rect(0, 0, 210, 45, 'F');
+
+            doc.setFillColor(56, 189, 248);
+            doc.rect(0, 0, 6, 45, 'F');
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.setFont('helvetica', 'bold');
+            doc.text('CCI — Centro Cearense de Idiomas', 14, 16);
+
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(148, 163, 184);
+            doc.text('SICCI — Sistema Integrado de Gestão Acadêmica', 14, 24);
+
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(56, 189, 248);
+            doc.text('BOLETIM ESCOLAR', 14, 36);
+
+            doc.setTextColor(148, 163, 184);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Emitido em: ${dataAtual}`, 155, 36);
+
+            // ── Dados do aluno ──────────────────────────────────────
+            doc.setFillColor(15, 23, 42);
+            doc.rect(0, 45, 210, 25, 'F');
+
+            doc.setTextColor(226, 232, 240);
+            doc.setFontSize(13);
+            doc.setFont('helvetica', 'bold');
+            doc.text(aluno.nome_completo || aluno.nome || '---', 14, 57);
+
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 116, 139);
+            doc.text(`Turma: ${turma}   |   Módulo: ${modulo}`, 14, 65);
+
+            // ── Tabela de notas ─────────────────────────────────────
+            const medias = [];
+            const tableBody = [];
+
+            for (let i = 1; i <= 4; i++) {
+                const chave = `p${i}`;
+                const p = notas[chave] || { n1: 0, n2: 0 };
+                const n1 = Math.min(10, parseFloat(p.n1 || 0));
+                const n2 = Math.min(10, parseFloat(p.n2 || 0));
+                const media = (n1 + n2) / 2;
+                medias.push(media);
+                tableBody.push([
+                    `${i}º Período`,
+                    n1.toFixed(1),
+                    n2.toFixed(1),
+                    media.toFixed(1),
+                    media >= 6 ? 'Aprovado' : 'Reprovado'
+                ]);
+            }
+
+            const notaFinal = medias.reduce((a, b) => a + b, 0) / 4;
+
+            doc.autoTable({
+                startY: 76,
+                head: [['Período', 'Nota 1 (N1)', 'Nota 2 (N2)', 'Média', 'Situação']],
+                body: tableBody,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [7, 21, 47],
+                    textColor: [56, 189, 248],
+                    fontStyle: 'bold',
+                    fontSize: 11,
+                    halign: 'center'
+                },
+                bodyStyles: {
+                    fillColor: [15, 23, 42],
+                    textColor: [226, 232, 240],
+                    fontSize: 11,
+                    halign: 'center'
+                },
+                alternateRowStyles: { fillColor: [20, 30, 55] },
+                didParseCell: function(data) {
+                    if (data.section === 'body' && data.column.index === 4) {
+                        const val = data.cell.raw;
+                        data.cell.styles.textColor = val === 'Aprovado' ? [34, 197, 94] : [239, 68, 68];
+                        data.cell.styles.fontStyle = 'bold';
+                    }
+                    if (data.section === 'body' && data.column.index === 3) {
+                        const v = parseFloat(data.cell.raw);
+                        data.cell.styles.textColor = v >= 6 ? [34, 197, 94] : [239, 68, 68];
+                        data.cell.styles.fontStyle = 'bold';
+                    }
+                },
+                margin: { left: 14, right: 14 }
+            });
+
+            // ── Nota Final ──────────────────────────────────────────
+            const finalY = doc.lastAutoTable.finalY + 10;
+            const aprovado = notaFinal >= 6;
+
+            doc.setFillColor(aprovado ? 20 : 60, aprovado ? 55 : 20, aprovado ? 20 : 20);
+            doc.roundedRect(14, finalY, 182, 22, 4, 4, 'F');
+
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(aprovado ? 34 : 239, aprovado ? 197 : 68, aprovado ? 94 : 68);
+            doc.text(`NOTA FINAL: ${notaFinal.toFixed(1)}   |   ${aprovado ? 'APROVADO ✓' : 'REPROVADO ✗'}`, 105, finalY + 14, { align: 'center' });
+
+            // ── Fórmula ─────────────────────────────────────────────
+            const formulaY = finalY + 30;
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 116, 139);
+            const formula = `Nota Final = (M1(${medias[0].toFixed(1)}) + M2(${medias[1].toFixed(1)}) + M3(${medias[2].toFixed(1)}) + M4(${medias[3].toFixed(1)})) ÷ 4`;
+            doc.text(formula, 105, formulaY, { align: 'center' });
+
+            // ── Rodapé ──────────────────────────────────────────────
+            doc.setFillColor(7, 21, 47);
+            doc.rect(0, 275, 210, 22, 'F');
+            doc.setTextColor(71, 85, 105);
+            doc.setFontSize(9);
+            doc.text('CCI — Centro Cearense de Idiomas  |  SICCI Sistema Acadêmico  |  Documento gerado automaticamente', 105, 287, { align: 'center' });
+
+            doc.save(`Boletim_${(aluno.nome_completo || aluno.nome || 'aluno').replace(/\s+/g, '_')}.pdf`);
+        }
+
+        /* ============================================================
+           BAIXAR TEMPLATE DE PLANILHA
+        ============================================================ */
+        function baixarTemplate() {
+            const wb = XLSX.utils.book_new();
+            const headers = [['nome', 'p1n1', 'p1n2', 'p2n1', 'p2n2', 'p3n1', 'p3n2', 'p4n1', 'p4n2']];
+            const exemplo = [['Nome Completo do Aluno', 8.0, 7.5, 9.0, 8.5, 7.0, 6.5, 8.0, 9.0]];
+            const ws = XLSX.utils.aoa_to_sheet([...headers, ...exemplo]);
+
+            // Largura das colunas
+            ws['!cols'] = [{ wch: 35 }, ...Array(8).fill({ wch: 10 })];
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Notas');
+            XLSX.writeFile(wb, 'template_notas_CCI.xlsx');
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Template baixado!',
+                html: `<p style="font-size:14px;color:#94a3b8">
+                    Preencha a coluna <strong style="color:#38bdf8">nome</strong> com o nome exato do aluno.<br>
+                    Notas devem ser de <strong style="color:#22c55e">0 a 10</strong>.<br>
+                    Colunas: p1n1, p1n2, p2n1, p2n2, p3n1, p3n2, p4n1, p4n2
+                </p>`,
+                background: '#0f172a', color: '#fff', confirmButtonColor: '#38bdf8'
+            });
+        }
+
+        /* ============================================================
+           IMPORTAR PLANILHA — com validação de notas
         ============================================================ */
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('importarNotas').addEventListener('change', importarPlanilha);
-            // Aplicar tema salvo
             const tema = localStorage.getItem("tema-escolhido");
             if (tema === "light") document.body.classList.add("light-theme");
         });
@@ -987,34 +1271,126 @@
         async function importarPlanilha(event) {
             const arquivo = event.target.files[0];
             if (!arquivo) return;
+
             const reader = new FileReader();
-            reader.onload = async function (e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const linhas = XLSX.utils.sheet_to_json(sheet);
-                if (!linhas.length) { Swal.fire('Erro', 'Planilha vazia.', 'error'); return; }
-                let atualizados = 0;
-                const snapshot = await db.ref('alunos').once('value');
-                const alunos = snapshot.val();
-                for (const linha of linhas) {
-                    const nomePlanilha = String(linha.nome || "").trim().toLowerCase();
-                    const found = Object.keys(alunos).find(id => {
-                        return String(alunos[id].nome_completo || alunos[id].nome || "").trim().toLowerCase() === nomePlanilha;
-                    });
-                    if (found) {
-                        await db.ref(`alunos/${found}/notas`).set({
-                            p1: { n1: parseFloat(linha.p1n1 || 0), n2: parseFloat(linha.p1n2 || 0) },
-                            p2: { n1: parseFloat(linha.p2n1 || 0), n2: parseFloat(linha.p2n2 || 0) },
-                            p3: { n1: parseFloat(linha.p3n1 || 0), n2: parseFloat(linha.p3n2 || 0) },
-                            p4: { n1: parseFloat(linha.p4n1 || 0), n2: parseFloat(linha.p4n2 || 0) }
-                        });
-                        atualizados++;
+            reader.onload = async function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const linhas = XLSX.utils.sheet_to_json(sheet);
+
+                    if (!linhas.length) {
+                        Swal.fire('Erro', 'A planilha está vazia.', 'error');
+                        return;
                     }
+
+                    // Valida as notas antes de qualquer escrita
+                    const erros = [];
+                    const camposNota = ['p1n1','p1n2','p2n1','p2n2','p3n1','p3n2','p4n1','p4n2'];
+                    linhas.forEach((linha, idx) => {
+                        camposNota.forEach(campo => {
+                            const v = parseFloat(linha[campo]);
+                            if (!isNaN(v) && (v < 0 || v > 10)) {
+                                erros.push(`Linha ${idx + 2}: ${campo} = ${v} (fora de 0–10)`);
+                            }
+                        });
+                    });
+
+                    if (erros.length > 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Notas inválidas na planilha!',
+                            html: `<div style="text-align:left;font-size:13px;color:#94a3b8;max-height:200px;overflow-y:auto">
+                                ${erros.map(e => `<div style="color:#ef4444;margin:4px 0">⚠ ${e}</div>`).join('')}
+                                <br><strong style="color:#f1f5f9">Corrija a planilha e importe novamente.</strong>
+                            </div>`,
+                            background: '#0f172a', color: '#fff'
+                        });
+                        event.target.value = '';
+                        return;
+                    }
+
+                    // Confirmação antes de importar
+                    const { isConfirmed } = await Swal.fire({
+                        title: `Importar ${linhas.length} registro(s)?`,
+                        html: `<p style="color:#94a3b8;font-size:14px">Esta ação irá <strong style="color:#f87171">substituir</strong> as notas existentes dos alunos encontrados na planilha.</p>`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#38bdf8',
+                        cancelButtonColor: '#334155',
+                        confirmButtonText: 'Importar',
+                        cancelButtonText: 'Cancelar',
+                        background: '#0f172a', color: '#fff'
+                    });
+                    if (!isConfirmed) { event.target.value = ''; return; }
+
+                    Swal.fire({
+                        title: 'Importando...',
+                        html: '<div class="spinner-border text-primary"></div>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        background: '#0f172a', color: '#fff'
+                    });
+
+                    const snapshot = await db.ref('alunos').once('value');
+                    const alunos = snapshot.val() || {};
+                    let atualizados = 0;
+                    const naoEncontrados = [];
+
+                    for (const linha of linhas) {
+                        const nomePlanilha = String(linha.nome || "").trim().toLowerCase();
+                        if (!nomePlanilha) continue;
+
+                        const found = Object.keys(alunos).find(id => {
+                            return String(alunos[id].nome_completo || alunos[id].nome || "").trim().toLowerCase() === nomePlanilha;
+                        });
+
+                        if (found) {
+                            const clampar = v => Math.min(10, Math.max(0, parseFloat(v) || 0));
+                            await db.ref(`alunos/${found}/notas`).set({
+                                p1: { n1: clampar(linha.p1n1), n2: clampar(linha.p1n2) },
+                                p2: { n1: clampar(linha.p2n1), n2: clampar(linha.p2n2) },
+                                p3: { n1: clampar(linha.p3n1), n2: clampar(linha.p3n2) },
+                                p4: { n1: clampar(linha.p4n1), n2: clampar(linha.p4n2) }
+                            });
+                            atualizados++;
+                        } else {
+                            naoEncontrados.push(linha.nome || '(sem nome)');
+                        }
+                    }
+
+                    let htmlResult = `<p style="color:#4ade80;font-size:15px;font-weight:600">${atualizados} aluno(s) atualizados</p>`;
+                    if (naoEncontrados.length > 0) {
+                        htmlResult += `<p style="color:#f87171;font-size:13px;margin-top:10px">${naoEncontrados.length} não encontrado(s):</p>
+                        <div style="text-align:left;font-size:12px;color:#94a3b8;max-height:120px;overflow-y:auto;margin-top:6px">
+                            ${naoEncontrados.map(n => `<div>• ${n}</div>`).join('')}
+                        </div>`;
+                    }
+
+                    Swal.fire({ icon: 'success', title: 'Importação concluída!', html: htmlResult, background: '#0f172a', color: '#fff' });
+                    event.target.value = '';
+
+                } catch (err) {
+                    Swal.fire({ icon: 'error', title: 'Erro ao importar', text: err.message, background: '#0f172a', color: '#fff' });
+                    event.target.value = '';
                 }
-                Swal.fire('Sucesso!', `${atualizados} alunos atualizados.`, 'success');
             };
             reader.readAsArrayBuffer(arquivo);
+        }
+
+        /* ============================================================
+           OUTROS
+        ============================================================ */
+        function fazerLogout() {
+            Swal.fire({
+                title: 'Deseja sair?', icon: 'question',
+                background: '#0f172a', color: '#fff',
+                confirmButtonColor: '#ef4444', cancelButtonColor: '#334155',
+                showCancelButton: true, confirmButtonText: 'Sair'
+            }).then(r => {
+                if (r.isConfirmed) { localStorage.clear(); window.location.href = "telalogin.html"; }
+            });
         }
 
         iniciarAplicacao();
