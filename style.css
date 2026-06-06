@@ -185,14 +185,14 @@ body.light-theme .nav-link-custom:hover {
 /* Link Ativo */
 .nav-link-custom.active {
     background: linear-gradient(90deg, #0f766e, #134e4a);
-    box-shadow: 0 0 20px rgba(20, 184, 166, .2);
+    box-shadow: none;
     color: #fff;
 }
 
 body.light-theme .nav-link-custom.active {
     background: linear-gradient(90deg, #14b8a6, #0d9488);
     color: #fff;
-    box-shadow: 0 4px 15px rgba(20, 184, 166, .3);
+    box-shadow: none;
 }
 
 /* BOTÃO DE SAIR (Ajuste de clique) */
@@ -320,8 +320,8 @@ body.light-theme .btn-tema:hover {
 }
 
 .btn-warning-custom:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(245, 158, 11, .25);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, .10);
 }
 
 .btn-green {
@@ -337,8 +337,8 @@ body.light-theme .btn-tema:hover {
 }
 
 .btn-green:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(34, 197, 94, .25);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, .10);
 }
 
 .btn-outline {
@@ -351,10 +351,6 @@ body.light-theme .btn-tema:hover {
     align-items: center;
     gap: 10px;
     background: rgba(255, 255, 255, .02);
-}
-
-.btn-outline:hover {
-    background: rgba(255, 255, 255, .05);
 }
 
 body.light-theme .btn-outline {
@@ -388,11 +384,12 @@ body.light-theme .btn-outline:hover {
 body.light-theme .card-cci-painel {
     background: #ffffff;
     border: 1px solid rgba(0, 0, 0, .06);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .card-cci-painel:hover {
-    transform: translateY(-5px);
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,.10);
 }
 
 .card-cci-painel::before {
@@ -579,7 +576,7 @@ body.light-theme .card-dashboard,
 body.light-theme .stat-item-dashboard {
     background: #ffffff !important;
     border-color: rgba(0, 0, 0, 0.1) !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
 }
 
 body.light-theme h1,
@@ -704,7 +701,7 @@ body.light-theme {
 
 .nav-link-custom.active {
     background: linear-gradient(90deg, #0f766e, #134e4a);
-    box-shadow: 0 0 20px rgba(20, 184, 166, .2);
+    box-shadow: none;
     color: #fff;
 }
 
@@ -814,8 +811,8 @@ body.light-theme .btn-tema {
 }
 
 .btn-warning-custom:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(245, 158, 11, .25);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, .10);
 }
 
 .btn-green {
@@ -832,26 +829,10 @@ body.light-theme .btn-tema {
 }
 
 .btn-green:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(34, 197, 94, .25);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, .10);
 }
 
-.btn-outline {
-    border: 1px solid rgba(255, 255, 255, .1);
-    color: white;
-    text-decoration: none;
-    padding: 14px 22px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: .3s;
-    background: rgba(255, 255, 255, .02);
-}
-
-.btn-outline:hover {
-    background: rgba(255, 255, 255, .05);
-}
 
 body.light-theme .btn-outline {
     border: 1px solid rgba(0, 0, 0, .1);
@@ -882,11 +863,12 @@ body.light-theme .btn-outline {
 body.light-theme .card-cci-painel {
     background: #fff;
     border: 1px solid rgba(0, 0, 0, .06);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .card-cci-painel:hover {
-    transform: translateY(-5px);
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,.10);
 }
 
 .card-cci-painel::before {
@@ -1868,6 +1850,10 @@ tbody tr:hover {
 .btn-outline {
     background: linear-gradient(90deg, #dc2626, #ef4444);
 }
+.btn-outline:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(220, 38, 38, .25);
+}
 
 .btn-green {
     background: linear-gradient(90deg, #16a34a, #15803d);
@@ -2664,6 +2650,7 @@ body.light-theme .tab.active {
     border-color: transparent !important;
 }
 
+body.light-theme .professor-select,
 body.light-theme .disciplina-select,
 body.light-theme .semestre-select,
 body.light-theme .horario-select {
@@ -2993,6 +2980,9 @@ body.light-theme .btn-cancel:hover {
     display: grid;
     grid-template-columns: 1fr 320px;
     gap: 30px;
+    overflow-y: auto;       /* Habilita o scroll vertical na tela de cadastro */
+    align-content: start;   /* Impede que o grid se estique para preencher a tela */
+    height: 100vh;          /* Garante que a área de scroll ocupe toda a janela */
 }
 
 /* ===== FORM ===== */
@@ -3559,7 +3549,7 @@ body.light-theme .btn-cancel:hover {
 
 .input-box-senha:focus-within {
     border-color: #2dd4bf;
-    box-shadow: 0 0 0 4px rgba(45, 212, 191, .12);
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, .08);
 }
 
 .input-box-senha i {
@@ -3795,7 +3785,7 @@ body::after {
 }
 
 .img-cci:hover {
-    transform: translateY(-8px) scale(1.03);
+    transform: translateY(-2px) scale(1.01);
 }
 
 /* ===================================
@@ -3924,7 +3914,7 @@ body::after {
 
 .input-box:focus-within {
     border-color: #2dd4bf;
-    box-shadow: 0 0 0 4px rgba(45, 212, 191, .12);
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, .08);
 }
 
 .input-box i {
@@ -3990,13 +3980,13 @@ body::after {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    box-shadow: 0 20px 40px rgba(20, 184, 166, .20);
+    box-shadow: 0 4px 14px rgba(20, 184, 166, .12);
     transition: 0.35s;
 }
 
 .btn-cci:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(20, 184, 166, .30);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(20, 184, 166, .14);
 }
 
 .btn-cci:active {
@@ -4041,3 +4031,65 @@ body::after {
         height: 160px;
     }
 }
+
+/* ==========================================================================
+   BRILHO GLOBAL REDUZIDO — overrides aplicados ao final (maior especificidade)
+   Reduz box-shadow de hover em todos os botões e cards do sistema.
+   ========================================================================== */
+
+/* Remove glow de links ativos na sidebar */
+.nav-link-custom.active { box-shadow: none !important; }
+body.light-theme .nav-link-custom.active { box-shadow: none !important; }
+
+/* Hover dos cards: movimento mínimo, sem glow */
+.card-cci-painel:hover { transform: translateY(-2px) !important; }
+
+/* Botões de ação: hover discreto */
+.btn-warning-custom:hover,
+.btn-green:hover,
+.btn-outline:hover,
+.btn-cci:hover { transform: translateY(-1px) !important; }
+
+/* KPI cards e chart cards — sem box-shadow em hover */
+.kpi-card:hover { border-color: rgba(255,255,255,.10) !important; box-shadow: none !important; }
+
+/* Filter buttons — sem glow ativo */
+.btn-filter.active { box-shadow: none !important; }
+
+/* Tab buttons — sem glow */
+.tab.active { box-shadow: none !important; }
+
+/* Botões de ação da tela de notas */
+.btn-green:hover { box-shadow: 0 4px 10px rgba(34,197,94,.10) !important; }
+.btn-warning-custom:hover { box-shadow: 0 4px 10px rgba(245,158,11,.10) !important; }
+
+/* Botão enviar senha */
+.btn-enviar:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(20,184,166,.12) !important;
+}
+
+/* Cards de período e boletim */
+.periodo-card-notas:hover { border-color: rgba(56,189,248,.12) !important; }
+
+/* Boletim header */
+.media-final-card-notas { box-shadow: none !important; }
+
+/* Student list buttons */
+.student-item-btn:hover { box-shadow: none !important; }
+.student-item-btn.active-student { box-shadow: none !important; }
+
+/* Conclusão card */
+.conclusao-card-notas { box-shadow: none !important; }
+
+/* pdf-link e outros links de ação */
+.pdf-link:hover { box-shadow: none !important; filter: none !important; }
+
+/* Modal e overlays — sem extra glow */
+.modal-content-turmas { box-shadow: 0 8px 32px rgba(0,0,0,.35) !important; }
+
+/* btn-submit no cadastro */
+.btn-submit:hover { box-shadow: 0 4px 12px rgba(34,197,94,.12) !important; transform: translateY(-1px) !important; }
+
+/* Ícone btn-voltar na tela de senha */
+.btn-voltar:hover { transform: translateY(-1px) !important; }

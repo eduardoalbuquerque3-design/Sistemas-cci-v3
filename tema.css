@@ -1,0 +1,45 @@
+/* ===================================
+   VARIÁVEIS GLOBAIS
+=================================== */
+
+:root{
+
+    --bg-body:#020817;
+    --bg-card:#07152f;
+    --bg-input:#0f172a;
+
+    --texto:#ffffff;
+    --texto-sec:#94a3b8;
+
+    --borda:rgba(255,255,255,.08);
+
+    --gradiente:
+        linear-gradient(
+            135deg,
+            rgba(20,184,166,.95),
+            rgba(6,182,212,.95)
+        );
+}
+
+/* ===================================
+   TEMA LIGHT
+=================================== */
+
+body[data-theme="light"]{
+
+    --bg-body:#f8fafc;
+    --bg-card:#ffffff;
+    --bg-input:#e2e8f0;
+
+    --texto:#0f172a;
+    --texto-sec:#475569;
+
+    --borda:rgba(0,0,0,.08);
+
+    --gradiente:
+        linear-gradient(
+            135deg,
+            #14b8a6,
+            #06b6d4
+        );
+}
