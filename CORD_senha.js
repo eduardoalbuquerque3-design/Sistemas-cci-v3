@@ -8,28 +8,19 @@ import {
 const firebaseConfig = {
     apiKey: "AIzaSyBvSOKw2VTeG1uMDqDn3-SWi0Hsf2z6i2w",
     authDomain: "sistema-cci-2026.firebaseapp.com",
-    databaseURL: "https://sistema-cci-default-rtdb.firebaseio.com/",
+    databaseURL: "https://sistema-cci-2026-default-rtdb.firebaseio.com/",
     projectId: "sistema-cci-2026",
     storageBucket: "sistema-cci-2026.firebasestorage.app",
     messagingSenderId: "633401547904",
     appId: "1:633401547904:web:0572615ffba4227a6f5a65"
 };
 
-
-// ================= FIREBASE =================
-
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
 
-
-// ================= FORM =================
-
 const form =
     document.getElementById('form-recuperacao');
-
-
-// ================= RECUPERAÇÃO =================
 
 form.addEventListener('submit', async (e) => {
 
@@ -52,7 +43,6 @@ form.addEventListener('submit', async (e) => {
 
     try {
 
-        // ENVIA EMAIL
         await sendPasswordResetEmail(
             auth,
             email

@@ -15,7 +15,7 @@ import {
 const firebaseConfig = {
     apiKey: "AIzaSyBvSOKw2VTeG1uMDqDn3-SWi0Hsf2z6i2w",
     authDomain: "sistema-cci-2026.firebaseapp.com",
-    databaseURL: "https://sistema-cci-default-rtdb.firebaseio.com/",
+    databaseURL: "https://sistema-cci-2026-default-rtdb.firebaseio.com/",
     projectId: "sistema-cci-2026",
     storageBucket: "sistema-cci-2026.firebasestorage.app",
     messagingSenderId: "633401547904",
